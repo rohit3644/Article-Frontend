@@ -1,0 +1,10 @@
+.Category {
+  background-color: lightgreen;
+  padding: 8px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 3px 3px grey;
+  width: fit-content;
+  height: fit-content;
+  margin: 2px;
+}

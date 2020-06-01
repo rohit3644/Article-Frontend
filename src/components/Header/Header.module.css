@@ -1,0 +1,25 @@
+.Header {
+  margin: 0 20px;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.LogoName {
+  display: inline;
+  border-radius: 5px;
+  padding: 5px;
+  color: blue;
+  font-family: system-ui;
+  font-weight: bold;
+}
+
+.HeaderStyle {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+.HeaderNav {
+  background-color: white !important;
+  border-bottom: 4px solid lightgrey;
+}

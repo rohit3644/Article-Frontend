@@ -1,0 +1,9 @@
+.About {
+  background-color: white;
+  padding: 16px;
+  width: 80vw;
+  max-width: 600px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 3px 3px grey;
+}

@@ -1,0 +1,24 @@
+.FooterLinks {
+  display: flex;
+  justify-content: space-between;
+}
+
+.About {
+  margin-left: 10px;
+  box-sizing: border-box;
+  color: white;
+}
+
+.Contact {
+  margin-right: 10px;
+  box-sizing: border-box;
+  color: white;
+}
+
+.About:hover {
+  color: white;
+}
+
+.Contact:hover {
+  color: white;
+}

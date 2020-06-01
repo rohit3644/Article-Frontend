@@ -1,0 +1,15 @@
+.Footer {
+  background-color: darkblue !important;
+  border-top: 4px solid lightgrey;
+  color: white;
+  text-align: center;
+  box-sizing: border-box;
+  display: block;
+  height: 10vh;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  font-weight: bold;
+  opacity: 0.9;
+  position: absolute;
+}

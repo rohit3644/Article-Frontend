@@ -1,0 +1,10 @@
+.Articles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  padding-bottom: 10vh;
+}
+
+.ArticleStyle {
+  text-align: center;
+}

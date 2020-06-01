@@ -1,0 +1,60 @@
+.WriteArticle {
+  background-color: white;
+  padding: 16px;
+  width: 70vw;
+  max-width: 700px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 3px 3px grey;
+}
+
+.WriteArticleStyle {
+  font-weight: bold;
+  color: red;
+}
+
+.RichTextEditor {
+  margin-top: 5;
+  margin-bottom: 5;
+}
+
+.WriteArticleCategory {
+  background-color: white;
+  padding: 16px;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 3px 3px grey;
+  margin: 0;
+  height: fit-content;
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 80px;
+}
+
+.FileUpload {
+  display: none;
+}
+
+.Label {
+  padding: 8px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 3px 3px grey;
+  background-color: lightblue;
+}
+
+.Image {
+  margin-left: 75px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  background-color: lightskyblue;
+  min-width: 150px;
+  min-height: 150px;
+}
+
+.Style {
+  font-weight: bold;
+  text-align: center;
+}
