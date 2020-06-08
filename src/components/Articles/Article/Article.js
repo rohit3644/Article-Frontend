@@ -1,43 +1,78 @@
 import React from "react";
 import classes from "./Article.module.css";
-import { Card, Button } from "react-bootstrap";
-// import Pic from "../../../assets/download.jpeg";
+import { Card, Button, Col } from "react-bootstrap";
+import { withRouter } from "react-router-dom";
 
-const Article = (props) => {
-  const readMoreLink = "/" + props.title.split(" ").join("-").toLowerCase();
-  return (
-    <div className={classes.ArticleStyle}>
-      <Card
-        style={{
-          width: "15rem",
-          boxShadow: "3px 3px 3px 3px grey",
-          height: "20rem",
-        }}
-      >
-        <Card.Img
-          variant="top"
-          src={props.imageName}
-          height="150"
-          width="120"
-        />
-        <Card.Body className={classes.Article}>
-          <Card.Title>
-            <a href={readMoreLink} onClick={props.readMore}>
-              {props.title}
-            </a>
-          </Card.Title>
-          <Card.Text>{props.author}</Card.Text>
-          <Button
-            variant="primary"
-            href={readMoreLink}
-            onClick={props.readMore}
-          >
-            Read More >>
-          </Button>
-        </Card.Body>
-      </Card>
-    </div>
-  );
-};
+class Article extends React.Component {
+  editHandler = () => {
+    localStorage.setItem("update", 1);
+    localStorage.setItem("articleId", this.props.articleId);
+    this.props.history.push("/write-article");
+  };
 
-export default Article;
+  render() {
+    const readMoreLink =
+      "/" + this.props.title.split(" ").join("-").toLowerCase();
+    return (
+      <div className={classes.ArticleStyle}>
+        <Card className={classes.Card}>
+          {this.props.editDelete ? (
+            <div className={classes.EditDelete}>
+              <i
+                className="fa fa-edit"
+                style={{ fontSize: "24px", color: "black" }}
+                onClick={this.editHandler}
+              ></i>
+              <i
+                className="fa fa-trash-o"
+                style={{ fontSize: "24px", color: "red" }}
+                onClick={() => this.props.handleShow(this.props.articleId)}
+              ></i>
+            </div>
+          ) : null}
+          <Card.Img
+            variant="top"
+            src={this.props.imageName}
+            height="150"
+            width="120"
+          />
+          <Card.Body className={classes.Article}>
+            <Card.Title>
+              <a href={readMoreLink} onClick={this.props.readMore}>
+                {this.props.title}
+              </a>
+            </Card.Title>
+            <div className={classes.Style}>
+              <Col>
+                <Card.Text>
+                  <i
+                    className="fa fa-comments-o"
+                    style={{ marginRight: "5px", color: "red" }}
+                  ></i>
+                  {this.props.commentsCount}
+                </Card.Text>
+              </Col>
+              <Card.Text>
+                <i
+                  className="fa fa-user-circle-o"
+                  style={{ marginRight: "5px", color: "red" }}
+                ></i>
+                {this.props.author}
+              </Card.Text>
+            </div>
+            <hr />
+            <Button
+              variant="primary"
+              href={readMoreLink}
+              onClick={this.props.readMore}
+            >
+              Read More >>
+            </Button>
+          </Card.Body>
+        </Card>
+      </div>
+    );
+  }
+}
+
+export default withRouter(Article);

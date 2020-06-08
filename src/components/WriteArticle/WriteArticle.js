@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Container,
   Button,
@@ -8,13 +8,42 @@ import {
   Alert,
 } from "react-bootstrap";
 import classes from "./WriteArticle.module.css";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import Category from "./Category/Categories";
-import { Redirect } from "react-router-dom";
 import axios from "axios";
 
 const WriteArticle = (props) => {
+  const inputEl = useRef(null);
+
+  useEffect(() => {
+    if (parseInt(localStorage.getItem("update")) === 1) {
+      localStorage.setItem("update", 0);
+      const filteredArticle = props.articles.filter((article) => {
+        return article.id === parseInt(localStorage.getItem("articleId"));
+      });
+      const selectedCategory = filteredArticle[0].category.map((category) => {
+        return category.category;
+      });
+      console.log(selectedCategory);
+      setValue({
+        selectedCategory: selectedCategory,
+        title: filteredArticle[0].title,
+        author_name: filteredArticle[0].author_name,
+      });
+      fileSetValue({
+        fileLocation: filteredArticle[0].image_name,
+      });
+      richTextEditorSetValue({
+        text: filteredArticle[0].content,
+      });
+      localStorage.setItem("updateArticleUserId", filteredArticle[0].user_id);
+      localStorage.setItem(
+        "updateArticleIsApproved",
+        filteredArticle[0].is_approved
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [value, setValue] = useState({
     selectedCategory: [],
     title: "",
@@ -26,9 +55,11 @@ const WriteArticle = (props) => {
     fileArrayLength: 0,
     fileName: "",
   });
+
   const [richTextEditorValue, richTextEditorSetValue] = useState({
     text: "",
   });
+
   const [SubmitValue, SubmitSetValue] = useState({
     isArticleSubmitted: false,
     isError: false,
@@ -114,19 +145,107 @@ const WriteArticle = (props) => {
     });
   };
 
+  console.log(richTextEditorValue.text);
+
+  const validations = (value, richTextEditorValue, fileValue) => {
+    console.log("not update");
+    let error = "";
+    if (value.selectedCategory.length === 0) {
+      error = "Category cannot be null";
+    } else if (value.title.length === 0) {
+      error = "Title cannot be null";
+    } else if (value.author_name.length === 0) {
+      error = "Author Name cannot be null";
+    } else if (richTextEditorValue.text.length === 0) {
+      error = "Content cannot be null";
+    } else if (fileValue.fileLocation === "") {
+      error = "Please upload an image";
+    } else {
+      let Extension = fileValue.fileName
+        .substring(fileValue.fileName.lastIndexOf(".") + 1)
+        .toLowerCase();
+
+      //The file uploaded is an image
+
+      if (
+        Extension !== "gif" &&
+        Extension !== "png" &&
+        Extension !== "jpeg" &&
+        Extension !== "jpg"
+      ) {
+        error = "Image of type gif,png,jpeg and jpg allowed";
+      }
+    }
+
+    return error;
+  };
+
+  const validationsUpdate = (value, richTextEditorValue) => {
+    console.log("update");
+    let error = "";
+    if (value.selectedCategory.length === 0) {
+      error = "Category cannot be null";
+    } else if (value.title.length === 0) {
+      error = "Title cannot be null";
+    } else if (value.author_name.length === 0) {
+      error = "Author Name cannot be null";
+    } else if (richTextEditorValue.text.length === 0) {
+      error = "Content cannot be null";
+    }
+    return error;
+  };
+
   const onSubmitHandler = (event) => {
     event.preventDefault();
+    let error = "";
+    if (
+      parseInt(localStorage.getItem("update")) === -1 ||
+      localStorage.getItem("update") === null
+    ) {
+      error = validations(value, richTextEditorValue, fileValue);
+    } else {
+      error = validationsUpdate(value, richTextEditorValue);
+    }
+
+    if (error !== "") {
+      window.scrollTo(0, inputEl);
+      SubmitSetValue({
+        isArticleSubmitted: true,
+        isError: true,
+        msg: error,
+        alertDismiss: true,
+      });
+      return;
+    }
     let is_approved = "";
     let user_id = -100;
-    if (localStorage.getItem("api_token") === null) {
-      is_approved = "No";
+    if (parseInt(localStorage.getItem("update")) === 0) {
+      is_approved = localStorage.getItem("updateArticleIsApproved");
+      user_id =
+        localStorage.getItem("updateArticleUserId") === null
+          ? -100
+          : parseInt(localStorage.getItem("updateArticleUserId"));
     } else {
-      is_approved = "Yes";
-      user_id = localStorage.getItem("user_id");
+      if (localStorage.getItem("api_token") === null) {
+        is_approved = "No";
+      } else {
+        is_approved = "Yes";
+        user_id = localStorage.getItem("user_id");
+      }
     }
 
     let form_data = new FormData();
-    form_data.append("image", fileValue.file);
+    let url = "http://127.0.0.1:8000/api/add-article";
+    if (parseInt(localStorage.getItem("update")) === 0) {
+      form_data.append(
+        "articleId",
+        parseInt(localStorage.getItem("articleId"))
+      );
+      url = "http://127.0.0.1:8000/api/update-article";
+    }
+    if (fileValue.file !== undefined) {
+      form_data.append("image", fileValue.file);
+    }
     form_data.append("selectedCategory", value.selectedCategory);
     form_data.append("title", value.title);
     form_data.append("authorName", value.author_name);
@@ -135,7 +254,7 @@ const WriteArticle = (props) => {
     form_data.append("userId", user_id);
 
     axios
-      .post("http://127.0.0.1:8000/api/add-article", form_data, {
+      .post(url, form_data, {
         headers: {
           "content-type": "multipart/form-data",
         },
@@ -143,6 +262,7 @@ const WriteArticle = (props) => {
       .then((response) => {
         console.log(response.data);
         if (response.data.code === 200) {
+          window.scrollTo(0, inputEl);
           SubmitSetValue({
             isArticleSubmitted: true,
             isError: false,
@@ -150,6 +270,7 @@ const WriteArticle = (props) => {
             alertDismiss: true,
           });
         } else if (response.data.code === 201) {
+          window.scrollTo(0, inputEl);
           SubmitSetValue({
             isArticleSubmitted: true,
             isError: true,
@@ -163,16 +284,15 @@ const WriteArticle = (props) => {
       });
   };
 
+  const richTextChange = (event) => {
+    richTextEditorSetValue({
+      text: event.target.value,
+    });
+  };
+
   const categoryTag = value.selectedCategory.map((tag, id) => {
     return <Category skill={tag} key={id} clicked={categoryDeleteHandler} />;
   });
-
-  if (
-    localStorage.getItem("api_token") !== null &&
-    localStorage.getItem("is_admin") === "Yes"
-  ) {
-    return <Redirect to="/admin-dashboard" />;
-  }
 
   return (
     <div>
@@ -190,6 +310,7 @@ const WriteArticle = (props) => {
             }
             dismissible
             className={classes.Style}
+            ref={inputEl}
           >
             {SubmitValue.msg}
           </Alert>
@@ -206,6 +327,7 @@ const WriteArticle = (props) => {
             }
             dismissible
             className={classes.Style}
+            ref={inputEl}
           >
             {SubmitValue.msg}
           </Alert>
@@ -235,17 +357,17 @@ const WriteArticle = (props) => {
               type="text"
               placeholder="Title"
               onBlur={titleChangeHandler}
+              defaultValue={value.title}
             />
           </Form.Group>
 
           <Form.Group controlId="formBasicContent">
             <Form.Label>Content</Form.Label>
-            <ReactQuill
-              theme="snow"
+            <Form.Control
+              as="textarea"
+              rows="3"
+              onChange={richTextChange}
               defaultValue={richTextEditorValue.text}
-              onChange={(content, delta, source, editor) =>
-                richTextEditorSetValue({ text: editor.getText(content) })
-              }
             />
           </Form.Group>
 
@@ -255,6 +377,7 @@ const WriteArticle = (props) => {
               type="text"
               placeholder="Author Name"
               onBlur={authorNameChangeHandler}
+              defaultValue={value.author_name}
             />
           </Form.Group>
           <Form.Group controlId="formBasicImageUpload">

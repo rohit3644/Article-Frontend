@@ -63,7 +63,6 @@ class Register extends React.Component {
       case 4:
         strength = 6;
         break;
-        
     }
 
     return strength;
@@ -126,34 +125,34 @@ class Register extends React.Component {
       this.state.passwordLength < 8
     ) {
       return;
-    } else {
-      const data = {
-        ...this.state,
-      };
-
-      axios
-        .post("http://127.0.0.1:8000/api/register", data)
-        .then((response) => {
-          console.log(response.data);
-          if (response.data === 1) {
-            this.setState({ isRegistered: true });
-          } else if (response.data === -1) {
-            this.setState({ backendError: "Registration Failed" });
-          } else {
-            this.setState({ backendError: response.data.message });
-          }
-        })
-        .catch((error) => {
-          console.log(error.response);
-        });
     }
+    const data = {
+      ...this.state,
+    };
+
+    axios
+      .post("http://127.0.0.1:8000/api/register", data)
+      .then((response) => {
+        console.log(response.data);
+        if (response.data === 1) {
+          this.setState({ isRegistered: true });
+        } else if (response.data === -1) {
+          this.setState({ backendError: "Registration Failed" });
+        } else {
+          this.setState({ backendError: response.data.message });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+      });
   };
 
   render() {
     if (
       localStorage.getItem("api_token") !== null &&
-      localStorage.getItem("is_admin") === "Yes" ) {
-        return <Redirect to="/admin-dashboard" />;
+      localStorage.getItem("is_admin") === "Yes"
+    ) {
+      return <Redirect to="/admin-dashboard" />;
     }
 
     return (

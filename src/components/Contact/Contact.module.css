@@ -5,5 +5,30 @@
   max-width: 400px;
   border-radius: 10px;
   box-sizing: border-box;
-  box-shadow: 3px 3px 3px 3px grey;
+  box-shadow: 0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+    0 6.7px 5.3px rgba(0, 0, 0, 0.048), 0 12.5px 10px rgba(0, 0, 0, 0.06),
+    0 22.3px 17.9px rgba(0, 0, 0, 0.072), 0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+    0 100px 80px rgba(0, 0, 0, 0.12);
+}
+
+.success,
+.error {
+  border: 1px solid;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px 10px 15px 50px;
+  width: 50%;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  text-align: center;
+}
+.success {
+  color: #4f8a10;
+  background-color: #dff2bf;
+  background-image: url("https://i.imgur.com/Q9BGTuy.png");
+}
+.error {
+  color: #d8000c;
+  background-color: #ffbaba;
+  background-image: url("https://i.imgur.com/GnyDvKN.png");
 }

@@ -19,10 +19,15 @@ class Header extends React.Component {
     this.props.history.push("/login");
   };
 
+  editHandler = () => {
+    localStorage.setItem("update", -1);
+    this.props.history.push("/write-article");
+  };
+
   render() {
     const display = this.props.display;
     const style = {
-      boxShadow: "3px 3px 3px 3px grey",
+      boxShadow: "1px 1px 1px 1px grey",
       borderRadius: "10px",
       display: display,
     };
@@ -51,17 +56,48 @@ class Header extends React.Component {
             </Col>
             {localStorage.getItem("is_admin") === "No" ||
             localStorage.getItem("is_admin") === null ? (
+              localStorage.getItem("is_admin") === "No" ? (
+                <Col>
+                  <Nav className="mr-auto" style={{ width: "max-content" }}>
+                    <Button className={classes.Header} href="/user-dashboard">
+                      My Articles
+                    </Button>
+                    <Button className={classes.Header} href="/">
+                      Home
+                    </Button>
+                    <Button
+                      className={classes.Header}
+                      href="/write-article"
+                      onClick={this.editHandler}
+                    >
+                      Write Article
+                    </Button>
+                  </Nav>
+                </Col>
+              ) : (
+                <Col>
+                  <Nav className="mr-auto" style={{ width: "max-content" }}>
+                    <Button className={classes.Header} href="/">
+                      Home
+                    </Button>
+                    <Button className={classes.Header} href="/write-article">
+                      Write Article
+                    </Button>
+                  </Nav>
+                </Col>
+              )
+            ) : (
               <Col>
-                <Nav className="mr-auto">
-                  <Button className={classes.Header} href="/">
-                    Home
+                <Nav className="mr-auto" style={{ width: "max-content" }}>
+                  <Button className={classes.Header} href="/admin-dashboard">
+                    Articles
                   </Button>
-                  <Button className={classes.Header} href="/write-article">
-                    Write Article
+                  <Button className={classes.Header} href="/comments">
+                    Comments
                   </Button>
                 </Nav>
               </Col>
-            ) : null}
+            )}
             <Col>
               <Form inline>
                 <FormControl
@@ -76,7 +112,7 @@ class Header extends React.Component {
 
             {localStorage.getItem("username") === null ? (
               <Col>
-                <Nav className="mr-auto">
+                <Nav className="mr-auto" style={{ width: "max-content" }}>
                   <Button className={classes.Header} href="/login">
                     Login
                   </Button>

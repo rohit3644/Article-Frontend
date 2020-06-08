@@ -15,6 +15,13 @@ class Articles extends React.Component {
     let articles =
       this.props.value === null
         ? this.props.article.map((article, id) => {
+            let commentCount = 0;
+            article.comments.map((comments) => {
+              if (comments.is_approved === "Yes") {
+                return (commentCount += 1);
+              }
+              return null;
+            });
             if (article.is_approved === "Yes") {
               return (
                 <Article
@@ -23,6 +30,7 @@ class Articles extends React.Component {
                   imageName={article.image_name}
                   author={article.author_name}
                   readMore={this.props.readMore}
+                  commentsCount={commentCount}
                 />
               );
             } else {
@@ -30,6 +38,13 @@ class Articles extends React.Component {
             }
           })
         : this.props.article.map((article, id) => {
+            let commentCount = 0;
+            article.comments.map((comments) => {
+              if (comments.is_approved === "Yes") {
+                return (commentCount += 1);
+              }
+              return null;
+            });
             if (
               article.title
                 .toLowerCase()
@@ -43,6 +58,7 @@ class Articles extends React.Component {
                   imageName={article.image_name}
                   author={article.author_name}
                   readMore={this.props.readMore}
+                  commentsCount={commentCount}
                 />
               );
             } else {
@@ -55,7 +71,11 @@ class Articles extends React.Component {
       <div>
         <h3 className={classes.ArticleStyle}>Popular Articles</h3>
         <hr />
-        <div className={classes.Articles}>{articles}</div>
+        {this.props.article.length > 0 ? (
+          <div className={classes.Articles}>{articles}</div>
+        ) : (
+          <h2 className={classes.Empty}>No articles to display</h2>
+        )}
       </div>
     );
   }

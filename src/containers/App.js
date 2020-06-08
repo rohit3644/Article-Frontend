@@ -14,6 +14,8 @@ import ReadMore from "../components/ReadMore/ReadMore";
 import axios from "axios";
 import AdminDashboard from "../components/Dashboard/AdminDashboard/AdminDashboard";
 import UserDashboard from "../components/Dashboard/UserDashboard/UserDashboard";
+import ArticleList from "../components/ArticleList/ArticleList";
+import Comments from "../components/Dashboard/AdminDashboard/Comments/Comments";
 
 class App extends React.PureComponent {
   constructor(props) {
@@ -23,13 +25,18 @@ class App extends React.PureComponent {
       readMoreUrl: "",
       article: [],
       isrender: false,
+      users: [],
     };
   }
 
   componentDidMount() {
     axios.get("http://127.0.0.1:8000/api/article").then((response) => {
       console.log(response.data);
-      this.setState({ article: [...response.data], isrender: true });
+      this.setState({
+        article: [...response.data.articles],
+        isrender: true,
+        users: [...response.data.users],
+      });
     });
   }
 
@@ -76,13 +83,22 @@ class App extends React.PureComponent {
             </Route>
 
             <Route exact path="/write-article">
-              <WriteArticle />
+              <WriteArticle articles={this.state.article} />
+            </Route>
+            <Route exact path="/article-list">
+              <ArticleList article={this.state.article} />
             </Route>
             <Route exact path="/admin-dashboard">
-              <AdminDashboard />
+              <AdminDashboard articles={this.state.article} />
+            </Route>
+            <Route exact path="/comments">
+              <Comments articles={this.state.article} />
             </Route>
             <Route exact path="/user-dashboard">
-              <UserDashboard />
+              <UserDashboard
+                articles={this.state.article}
+                readMore={this.readMoreUrlHandler}
+              />
             </Route>
             <Route exact path="/login">
               <Login />

@@ -7,6 +7,7 @@ import { withRouter, Redirect } from "react-router-dom";
 class Login extends React.Component {
   constructor(props) {
     super(props);
+    this.errorRef = React.createRef();
     this.state = {
       email: "",
       password: "",
@@ -58,6 +59,7 @@ class Login extends React.Component {
             this.props.history.push("/user-dashboard");
           }
         } else {
+          window.scrollTo(0, this.errorRef);
           this.setState({
             error: true,
             errorMsg: response.data.message,
@@ -104,6 +106,7 @@ class Login extends React.Component {
             onClose={() => this.setState({ alertDismiss: false })}
             dismissible
             className={classes.LoginStyle}
+            ref={this.errorRef}
           >
             {this.state.errorMsg}
           </Alert>
