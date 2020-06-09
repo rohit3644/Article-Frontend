@@ -2,6 +2,7 @@ import React from "react";
 import Article from "./Article/Article";
 import classes from "./Articles.module.css";
 import { Redirect } from "react-router-dom";
+import Pagination from "react-js-pagination";
 
 class Articles extends React.Component {
   render() {
@@ -72,7 +73,23 @@ class Articles extends React.Component {
         <h3 className={classes.ArticleStyle}>Popular Articles</h3>
         <hr />
         {this.props.article.length > 0 ? (
-          <div className={classes.Articles}>{articles}</div>
+          <React.Fragment>
+            <div className={classes.Articles}>{articles}</div>
+            <br />
+            <div className={classes.Pagination}>
+              <Pagination
+                activePage={this.props.activePage}
+                itemsCountPerPage={this.props.itemsCountPerPage}
+                totalItemsCount={this.props.totalItemsCount}
+                pageRangeDisplayed={2}
+                onChange={(pageNumber) => this.props.getUserData(pageNumber)}
+                itemClass="page-item"
+                linkClass="page-link"
+                firstPageText="First"
+                lastPageText="Last"
+              />
+            </div>
+          </React.Fragment>
         ) : (
           <h2 className={classes.Empty}>No articles to display</h2>
         )}

@@ -4,3 +4,8 @@
   justify-content: space-evenly;
   padding-bottom: 10vh;
 }
+
+.Pagination {
+  display: flex;
+  justify-content: center;
+}

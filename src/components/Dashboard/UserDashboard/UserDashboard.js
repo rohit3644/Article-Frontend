@@ -4,6 +4,7 @@ import Article from "../../Articles/Article/Article";
 import classes from "./UserDashboard.module.css";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import PaginationComponent from "../../Pagination/Pagination";
 
 class UserDashboard extends React.Component {
   constructor(props) {
@@ -11,6 +12,8 @@ class UserDashboard extends React.Component {
     this.state = {
       modalFlag: false,
       articleId: 0,
+      currentPage: 1,
+      articlePerPage: 6,
     };
   }
 
@@ -45,6 +48,12 @@ class UserDashboard extends React.Component {
       });
   };
 
+  paginate = (pageNumber) => {
+    this.setState({
+      currentPage: pageNumber,
+    });
+  };
+
   render() {
     if (localStorage.getItem("api_token") === null) {
       return <Redirect to="/login" />;
@@ -64,7 +73,16 @@ class UserDashboard extends React.Component {
     const filteredArticle = articles.filter((el) => {
       return el != null;
     });
-    const userArticles = filteredArticle.map((article, id) => {
+
+    const indexOfLastArticle =
+      this.state.currentPage * this.state.articlePerPage;
+    const indexOfFirstArticle = indexOfLastArticle - this.state.articlePerPage;
+    const currentArticles = filteredArticle.slice(
+      indexOfFirstArticle,
+      indexOfLastArticle
+    );
+
+    const userArticles = currentArticles.map((article, id) => {
       let commentCount = 0;
       article.comments.map((comments) => {
         if (comments.is_approved === "Yes") {
@@ -86,6 +104,7 @@ class UserDashboard extends React.Component {
         />
       );
     });
+
     return (
       <div>
         <>
@@ -109,7 +128,17 @@ class UserDashboard extends React.Component {
         <h3 className={classes.ArticleStyle}>My Articles</h3>
         <hr />
         {filteredArticle.length > 0 ? (
-          <div className={classes.Articles}>{userArticles}</div>
+          <React.Fragment>
+            <div className={classes.Articles}>{userArticles}</div>
+            <br />
+            <div className={classes.Pagination}>
+              <PaginationComponent
+                totalArticles={filteredArticle.length}
+                articlePerPage={this.state.articlePerPage}
+                paginate={this.paginate}
+              />
+            </div>
+          </React.Fragment>
         ) : (
           <h2 className={classes.Empty}>No articles to display</h2>
         )}

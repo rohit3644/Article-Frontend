@@ -4,6 +4,7 @@ import Listing from "./Listing/Listing";
 import classes from "./AdminDashboard.module.css";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import PaginationComponent from "../../Pagination/Pagination";
 
 class AdminDashboard extends React.PureComponent {
   constructor(props) {
@@ -11,6 +12,8 @@ class AdminDashboard extends React.PureComponent {
     this.state = {
       modalFlag: false,
       articleId: 0,
+      currentPage: 1,
+      articlePerPage: 6,
     };
   }
 
@@ -45,6 +48,12 @@ class AdminDashboard extends React.PureComponent {
       });
   };
 
+  paginate = (pageNumber) => {
+    this.setState({
+      currentPage: pageNumber,
+    });
+  };
+
   render() {
     if (localStorage.getItem("api_token") === null) {
       return <Redirect to="/login" />;
@@ -55,7 +64,16 @@ class AdminDashboard extends React.PureComponent {
       return <Redirect to="/user-dashboard" />;
     }
     console.log(this.props.articles);
-    const articles = this.props.articles.map((article, id) => {
+
+    const indexOfLastArticle =
+      this.state.currentPage * this.state.articlePerPage;
+    const indexOfFirstArticle = indexOfLastArticle - this.state.articlePerPage;
+    const currentArticles = this.props.articles.slice(
+      indexOfFirstArticle,
+      indexOfLastArticle
+    );
+
+    const articles = currentArticles.map((article, id) => {
       let categories = [];
       article.category.map((categoryArray) => {
         return categories.push(categoryArray.category);
@@ -96,6 +114,14 @@ class AdminDashboard extends React.PureComponent {
         <h2 style={{ textAlign: "center" }}>Articles</h2>
         <hr />
         <div className={classes.Article}>{articles}</div>
+        <br />
+        <div className={classes.Pagination}>
+          <PaginationComponent
+            totalArticles={this.props.articles.length}
+            articlePerPage={this.state.articlePerPage}
+            paginate={this.paginate}
+          />
+        </div>
       </div>
     );
   }

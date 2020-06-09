@@ -26,19 +26,36 @@ class App extends React.PureComponent {
       article: [],
       isrender: false,
       users: [],
+      activePage: 1,
+      itemsCountPerPage: 1,
+      totalItemsCount: 1,
     };
   }
 
+  handlePageChange = (pageNumber) => {
+    console.log(`active page is ${pageNumber}`);
+    this.setState({ activePage: pageNumber });
+  };
+
   componentDidMount() {
-    axios.get("http://127.0.0.1:8000/api/article").then((response) => {
-      console.log(response.data);
-      this.setState({
-        article: [...response.data.articles],
-        isrender: true,
-        users: [...response.data.users],
-      });
-    });
+    this.getUserData();
   }
+
+  getUserData = (pageNumber = 1) => {
+    axios
+      .get(`http://127.0.0.1:8000/api/article?page=${pageNumber}`)
+      .then((response) => {
+        console.log(response.data);
+        this.setState({
+          article: [...response.data.articles.data],
+          activePage: response.data.articles.current_page,
+          itemsCountPerPage: response.data.articles.per_page,
+          totalItemsCount: response.data.articles.total,
+          isrender: true,
+          users: [...response.data.users.data],
+        });
+      });
+  };
 
   searchValueHandler = (event) => {
     this.setState({
@@ -79,6 +96,10 @@ class App extends React.PureComponent {
                 value={this.state.searchValue}
                 readMore={this.readMoreUrlHandler}
                 article={this.state.article}
+                activePage={this.state.activePage}
+                itemsCountPerPage={this.state.itemsCountPerPage}
+                totalItemsCount={this.state.totalItemsCount}
+                getUserData={this.getUserData}
               />
             </Route>
 

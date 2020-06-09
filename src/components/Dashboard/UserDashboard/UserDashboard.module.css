@@ -14,3 +14,8 @@
   font-weight: bold;
   color: grey;
 }
+
+.Pagination {
+  display: flex;
+  justify-content: center;
+}

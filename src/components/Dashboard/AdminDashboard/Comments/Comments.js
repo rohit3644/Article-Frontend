@@ -4,6 +4,7 @@ import Listing from "../Listing/Listing";
 import classes from "./Comments.module.css";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
+import PaginationComponent from "../../../Pagination/Pagination";
 
 class Comments extends React.PureComponent {
   constructor(props) {
@@ -11,6 +12,8 @@ class Comments extends React.PureComponent {
     this.state = {
       modalFlag: false,
       commentId: 0,
+      currentPage: 1,
+      articlePerPage: 3,
     };
   }
 
@@ -45,6 +48,12 @@ class Comments extends React.PureComponent {
       });
   };
 
+  paginate = (pageNumber) => {
+    this.setState({
+      currentPage: pageNumber,
+    });
+  };
+
   render() {
     if (localStorage.getItem("api_token") === null) {
       return <Redirect to="/login" />;
@@ -55,7 +64,16 @@ class Comments extends React.PureComponent {
       return <Redirect to="/user-dashboard" />;
     }
     console.log(this.props.articles);
-    const comments = this.props.articles.map((article) => {
+
+    const indexOfLastArticle =
+      this.state.currentPage * this.state.articlePerPage;
+    const indexOfFirstArticle = indexOfLastArticle - this.state.articlePerPage;
+    const currentArticles = this.props.articles.slice(
+      indexOfFirstArticle,
+      indexOfLastArticle
+    );
+
+    const comments = currentArticles.map((article) => {
       return article.comments.map((commentsArray, id) => {
         return (
           <Listing
@@ -94,6 +112,14 @@ class Comments extends React.PureComponent {
         <h2 style={{ textAlign: "center" }}>Comments</h2>
         <hr />
         <div className={classes.Comments}>{comments}</div>
+        <br />
+        <div className={classes.Pagination}>
+          <PaginationComponent
+            totalArticles={this.props.articles.length}
+            articlePerPage={this.state.articlePerPage}
+            paginate={this.paginate}
+          />
+        </div>
       </div>
     );
   }
