@@ -42,6 +42,7 @@ class Login extends React.Component {
 
     const data = {
       ...this.state,
+      go: 1,
     };
 
     axios

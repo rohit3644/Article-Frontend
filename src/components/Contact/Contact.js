@@ -24,10 +24,14 @@ class Contact extends React.Component {
 
   submitHandler = (event) => {
     event.preventDefault();
-    
+
     let data = {
       ...this.state,
+      // isAdmin: "Yes",
     };
+    if (localStorage.getItem("is_admin") !== null) {
+      data["isAdmin"] = localStorage.getItem("is_admin");
+    }
     axios
       .post("http://127.0.0.1:8000/api/contact", data)
       .then((response) => {

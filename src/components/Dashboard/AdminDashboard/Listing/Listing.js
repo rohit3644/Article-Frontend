@@ -20,6 +20,7 @@ class Listing extends React.Component {
     const data = {
       newComment: this.state.newComment,
       id: this.props.commentId,
+      isAdmin: localStorage.getItem("is_admin"),
     };
     axios
       .post("http://127.0.0.1:8000/api/edit-comment", data)
@@ -53,11 +54,14 @@ class Listing extends React.Component {
   approveArticleHandler = () => {
     const data = {
       id: this.props.articleId,
+      isAdmin: localStorage.getItem("is_admin"),
     };
     axios
       .post("http://127.0.0.1:8000/api/approve-article", data)
       .then((response) => {
+        console.log(response.data);
         window.location.reload();
+        
       })
       .catch((error) => {
         console.log(error.response);
@@ -66,6 +70,7 @@ class Listing extends React.Component {
   approveCommentHandler = () => {
     const data = {
       id: this.props.commentId,
+      isAdmin: localStorage.getItem("is_admin"),
     };
     axios
       .post("http://127.0.0.1:8000/api/approve-comment", data)

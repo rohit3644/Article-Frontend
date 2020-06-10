@@ -78,7 +78,11 @@ class ReadMore extends React.Component {
       articleUser: this.state.articleUser,
       articleMail: this.state.articleMail,
       articleName: this.state.title,
+      // isAdmin: "Yes",
     };
+    if (localStorage.getItem("is_admin") !== null) {
+      data["isAdmin"] = localStorage.getItem("is_admin");
+    }
 
     axios
       .post("http://127.0.0.1:8000/api/add-comment", data)

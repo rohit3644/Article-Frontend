@@ -252,6 +252,10 @@ const WriteArticle = (props) => {
     form_data.append("content", richTextEditorValue.text);
     form_data.append("isApproved", is_approved);
     form_data.append("userId", user_id);
+    // form_data.append("isAdmin", "Yes");
+    if (localStorage.getItem("is_admin") !== null) {
+      form_data.append("isAdmin", localStorage.getItem("is_admin"));
+    }
 
     axios
       .post(url, form_data, {

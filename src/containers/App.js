@@ -30,6 +30,7 @@ class App extends React.PureComponent {
       itemsCountPerPage: 1,
       totalItemsCount: 1,
     };
+    document.cookie = "username=John Doe; expires=Wed, 10 Jun 2020 12:30:00 UTC";
   }
 
   handlePageChange = (pageNumber) => {

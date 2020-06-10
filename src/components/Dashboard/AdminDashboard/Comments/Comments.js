@@ -33,6 +33,7 @@ class Comments extends React.PureComponent {
     event.preventDefault();
     const data = {
       id: this.state.commentId,
+      isAdmin: localStorage.getItem("is_admin"),
     };
     axios
       .post("http://127.0.0.1:8000/api/delete-comment", data)
