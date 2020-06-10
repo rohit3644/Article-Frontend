@@ -17,29 +17,36 @@ const WriteArticle = (props) => {
   useEffect(() => {
     if (parseInt(localStorage.getItem("update")) === 1) {
       localStorage.setItem("update", 0);
-      const filteredArticle = props.articles.filter((article) => {
-        return article.id === parseInt(localStorage.getItem("articleId"));
-      });
-      const selectedCategory = filteredArticle[0].category.map((category) => {
-        return category.category;
-      });
-      console.log(selectedCategory);
-      setValue({
-        selectedCategory: selectedCategory,
-        title: filteredArticle[0].title,
-        author_name: filteredArticle[0].author_name,
-      });
-      fileSetValue({
-        fileLocation: filteredArticle[0].image_name,
-      });
-      richTextEditorSetValue({
-        text: filteredArticle[0].content,
-      });
-      localStorage.setItem("updateArticleUserId", filteredArticle[0].user_id);
-      localStorage.setItem(
-        "updateArticleIsApproved",
-        filteredArticle[0].is_approved
-      );
+      console.log(parseInt(localStorage.getItem("articleId")));
+      let data = {
+        id: parseInt(localStorage.getItem("articleId")),
+      };
+      axios
+        .post("http://127.0.0.1:8000/api/get-article", data)
+        .then((response) => {
+          console.log(response.data);
+
+            const selectedCategory = response.data.category.map((category) => {
+              return category.category;
+            });
+            console.log(selectedCategory);
+            setValue({
+              selectedCategory: selectedCategory,
+              title: response.data.title,
+              author_name: response.data.author_name,
+            });
+            fileSetValue({
+              fileLocation: response.data.image_name,
+            });
+            richTextEditorSetValue({
+              text: response.data.content,
+            });
+            localStorage.setItem("updateArticleUserId", response.data.user_id);
+            localStorage.setItem(
+              "updateArticleIsApproved",
+              response.data.is_approved
+            );
+        });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -230,7 +237,7 @@ const WriteArticle = (props) => {
         is_approved = "No";
       } else {
         is_approved = "Yes";
-        user_id = localStorage.getItem("user_id");
+        user_id = parseInt(localStorage.getItem("api_token").slice(65));
       }
     }
 
@@ -253,8 +260,11 @@ const WriteArticle = (props) => {
     form_data.append("isApproved", is_approved);
     form_data.append("userId", user_id);
     // form_data.append("isAdmin", "Yes");
-    if (localStorage.getItem("is_admin") !== null) {
-      form_data.append("isAdmin", localStorage.getItem("is_admin"));
+    if (localStorage.getItem("api_token") !== null) {
+      form_data.append(
+        "isAdmin",
+        localStorage.getItem("api_token").slice(0, 5) === "78357" ? "Yes" : "No"
+      );
     }
 
     axios

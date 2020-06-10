@@ -24,7 +24,6 @@ class Login extends React.Component {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email) && email !== "";
   };
-
   validatePassword = (password) => {
     return password.length < 8 || password === "" ? false : true;
   };
@@ -52,8 +51,8 @@ class Login extends React.Component {
         if (response.data.code === 200) {
           localStorage.setItem("api_token", response.data.api_key);
           localStorage.setItem("username", response.data.user.name);
-          localStorage.setItem("is_admin", response.data.user.is_admin);
-          localStorage.setItem("user_id", response.data.user.id);
+          // localStorage.setItem("is_admin", response.data.user.is_admin);
+          // localStorage.setItem("user_id", response.data.user.id);
           if (response.data.user.is_admin === "Yes") {
             this.props.history.push("/admin-dashboard");
           } else {
@@ -94,7 +93,7 @@ class Login extends React.Component {
   render() {
     if (
       localStorage.getItem("api_token") !== null &&
-      localStorage.getItem("is_admin") === "Yes"
+      localStorage.getItem("api_token").slice(0, 5) === "78357"
     ) {
       return <Redirect to="/admin-dashboard" />;
     }

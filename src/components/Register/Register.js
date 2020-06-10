@@ -150,7 +150,7 @@ class Register extends React.Component {
   render() {
     if (
       localStorage.getItem("api_token") !== null &&
-      localStorage.getItem("is_admin") === "Yes"
+      localStorage.getItem("api_token").slice(0, 5) === "78357"
     ) {
       return <Redirect to="/admin-dashboard" />;
     }

@@ -27,10 +27,12 @@ class Contact extends React.Component {
 
     let data = {
       ...this.state,
-      // isAdmin: "Yes",
     };
-    if (localStorage.getItem("is_admin") !== null) {
-      data["isAdmin"] = localStorage.getItem("is_admin");
+    if (localStorage.getItem("api_token") !== null) {
+      data["isAdmin"] =
+        localStorage.getItem("api_token").slice(0, 5) === "78357"
+          ? "Yes"
+          : "No";
     }
     axios
       .post("http://127.0.0.1:8000/api/contact", data)
@@ -57,6 +59,7 @@ class Contact extends React.Component {
   render() {
     return (
       <div>
+        {/* if the form is submitted  */}
         {this.state.submitted ? (
           this.state.error ? (
             <div className={classes.error}>{this.state.feedbackMsg}</div>

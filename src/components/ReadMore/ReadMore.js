@@ -7,43 +7,46 @@ import Comments from "./Comments/Comments";
 class ReadMore extends React.Component {
   constructor(props) {
     super(props);
-    console.log("this is constructor");
-    const filteredArray = this.props.article.filter((el) => {
-      return el != null;
+    console.log(this.props);
+    this.state = {
+      article: null,
+      isrender: false,
+      category: null,
+      categories: "",
+      addComment: false,
+      comment: "",
+      commentMsg: "",
+      commentUpdate: false,
+      commentSuccess: false,
+      commentsArray: [],
+      newCommentUser: "",
+    };
+  }
+
+  componentDidMount() {
+    const data = {
+      article: this.props.article,
+    };
+    axios.post("http://127.0.0.1:8000/api/read-more", data).then((response) => {
+      if (response.data === -1) {
+        this.setState({ isrender: true, article: {} });
+      } else {
+        let category = [];
+        console.log(response.data);
+        response.data.category.map((ele) => {
+          return category.push(ele.category);
+        });
+
+        let str = category.join(", ");
+        this.setState({
+          isrender: true,
+          category: str,
+          article: response.data,
+          commentsArray: response.data.comments,
+        });
+        console.log(this.state);
+      }
     });
-    console.log(filteredArray);
-    if (filteredArray.length > 0) {
-      this.state = {
-        selectedId: filteredArray[0].id,
-        isrender: false,
-        title: filteredArray[0].title,
-        content: filteredArray[0].content,
-        author: filteredArray[0].author_name,
-        categories: "",
-        imageName: filteredArray[0].image_name,
-        addComment: false,
-        comment: "",
-        commentMsg: "",
-        commentUpdate: false,
-        commentSuccess: false,
-        commentsArray: filteredArray[0].comments,
-        newCommentUser: "",
-        array: filteredArray,
-        articleUser:
-          filteredArray[0].articleUser === null
-            ? ""
-            : filteredArray[0].articleUser.name,
-        articleMail:
-          filteredArray[0].articleUser === null
-            ? ""
-            : filteredArray[0].articleUser.email,
-      };
-    } else {
-      this.state = {
-        isrender: true,
-        array: [],
-      };
-    }
   }
 
   commentHandler = () => {
@@ -68,20 +71,29 @@ class ReadMore extends React.Component {
       is_approved = "No";
     } else {
       is_approved = "Yes";
-      user_id = localStorage.getItem("user_id");
+      user_id = parseInt(localStorage.getItem("api_token").slice(65));
     }
     const data = {
       comment: this.state.comment,
-      articleId: this.state.selectedId,
+      articleId: this.state.article.id,
       isApproved: is_approved,
       userId: user_id,
-      articleUser: this.state.articleUser,
-      articleMail: this.state.articleMail,
-      articleName: this.state.title,
+      articleUser:
+        this.state.article.articleUser === null
+          ? ""
+          : this.state.article.articleUser.name,
+      articleMail:
+        this.state.article.articleUser === null
+          ? ""
+          : this.state.article.articleUser.email,
+      articleName: this.state.article.title,
       // isAdmin: "Yes",
     };
-    if (localStorage.getItem("is_admin") !== null) {
-      data["isAdmin"] = localStorage.getItem("is_admin");
+    if (localStorage.getItem("api_token") !== null) {
+      data["isAdmin"] =
+        localStorage.getItem("api_token").slice(0, 5) === "78357"
+          ? "Yes"
+          : "No";
     }
 
     axios
@@ -90,7 +102,10 @@ class ReadMore extends React.Component {
         if (response.data.code === 200) {
           console.log(response.data.info);
           this.setState({
-            commentsArray: [...response.data.info.comments],
+            commentsArray: [
+              this.state.article.comments,
+              ...response.data.info.comments,
+            ],
             commentMsg: "Successfully added the comment",
             commentSuccess: true,
             commentUpdate: true,
@@ -116,26 +131,6 @@ class ReadMore extends React.Component {
     });
   };
 
-  componentDidMount() {
-    if (this.state.array.length > 0) {
-      console.log("this is componentDidMount");
-      const data = {
-        selectedId: this.state.selectedId,
-      };
-      axios
-        .post("http://127.0.0.1:8000/api/read-more", data)
-        .then((response) => {
-          let category = [];
-          console.log(response.data);
-          response.data.map((ele) => {
-            return category.push(ele.category);
-          });
-          let str = category.join(", ");
-          this.setState({ isrender: true, category: str });
-        });
-    }
-  }
-
   render() {
     if (!this.state.isrender) {
       return <div className="loader">Loading...</div>;
@@ -143,46 +138,49 @@ class ReadMore extends React.Component {
 
     let comments = null;
 
-    if (this.state.array.length > 0) {
+    if (Object.keys(this.state.article).length > 0) {
       console.log("this is render");
 
+      let filteredCommentArray = this.state.commentsArray.filter((comment) => {
+        return comment.is_approved === "Yes";
+      });
+
+      console.log(filteredCommentArray);
+
       comments =
-        this.state.commentsArray.length > 0
-          ? this.state.commentsArray.map((comments, id) => {
-              if (comments.is_approved === "Yes") {
-                return (
-                  <Comments
-                    key={id}
-                    text={comments.comments}
-                    newUser={comments.user}
-                  />
-                );
-              }
-              return null;
+        filteredCommentArray.length > 0
+          ? filteredCommentArray.map((comments, id) => {
+              return (
+                <Comments
+                  key={id}
+                  text={comments.comments}
+                  newUser={comments.user}
+                />
+              );
             })
           : "Be the first one to comment";
     }
 
     return (
       <div>
-        {this.state.array.length > 0 ? (
+        {Object.keys(this.state.article).length > 0 ? (
           <Container className={classes.ReadMore}>
             <img
-              src={this.state.imageName}
+              src={this.state.article.image_name}
               alt="pic"
               width="250"
               height="250"
             />
             <hr />
-            <h3>{this.state.title}</h3>
+            <h3>{this.state.article.title}</h3>
             <hr />
             <strong>
               Category: <a href="/article-list">{this.state.category}</a>
             </strong>
             <hr />
-            <p>{this.state.content}</p>
+            <p>{this.state.article.content}</p>
             <hr />
-            <p>Author: {this.state.author}</p>
+            <p>Author: {this.state.article.author_name}</p>
             <hr />
             {this.state.addComment ? (
               <div>

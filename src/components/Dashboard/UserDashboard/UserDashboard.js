@@ -4,18 +4,47 @@ import Article from "../../Articles/Article/Article";
 import classes from "./UserDashboard.module.css";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
-import PaginationComponent from "../../Pagination/Pagination";
+import Pagination from "react-js-pagination";
 
 class UserDashboard extends React.Component {
   constructor(props) {
     super(props);
+    console.log(this.props.location.pathname);
     this.state = {
       modalFlag: false,
       articleId: 0,
-      currentPage: 1,
-      articlePerPage: 6,
+      userArticles: [],
+      activePage: 1,
+      itemsCountPerPage: 1,
+      totalItemsCount: 1,
+      isrender: false,
     };
   }
+
+  componentDidMount() {
+    this.getUserData();
+  }
+
+  getUserData = (pageNumber = 1) => {
+    axios
+      .post(`http://127.0.0.1:8000/api/user-article?page=${pageNumber}`, {
+        isAdmin:
+          localStorage.getItem("api_token").slice(0, 5) === "78357"
+            ? "Yes"
+            : "No",
+        id: parseInt(localStorage.getItem("api_token").slice(65)),
+      })
+      .then((response) => {
+        console.log(response.data);
+        this.setState({
+          userArticles: [...response.data.articles.data],
+          activePage: response.data.articles.current_page,
+          itemsCountPerPage: response.data.articles.per_page,
+          totalItemsCount: response.data.articles.total,
+          isrender: true,
+        });
+      });
+  };
 
   handleClose = () => {
     this.setState({
@@ -55,17 +84,24 @@ class UserDashboard extends React.Component {
   };
 
   render() {
+    if (!this.state.isrender) {
+      return <div className="loader">Loading...</div>;
+    }
+
     if (localStorage.getItem("api_token") === null) {
       return <Redirect to="/login" />;
     } else if (
       localStorage.getItem("api_token") !== null &&
-      localStorage.getItem("is_admin") === "Yes"
+      localStorage.getItem("api_token").slice(0, 5) === "78357"
     ) {
       return <Redirect to="/admin-dashboard" />;
     }
     console.log(this.props.articles);
-    const articles = this.props.articles.map((article) => {
-      if (article.user_id === parseInt(localStorage.getItem("user_id"))) {
+    const articles = this.state.userArticles.map((article) => {
+      if (
+        article.user_id ===
+        parseInt(localStorage.getItem("api_token").slice(65))
+      ) {
         return article;
       }
       return null;
@@ -74,15 +110,9 @@ class UserDashboard extends React.Component {
       return el != null;
     });
 
-    const indexOfLastArticle =
-      this.state.currentPage * this.state.articlePerPage;
-    const indexOfFirstArticle = indexOfLastArticle - this.state.articlePerPage;
-    const currentArticles = filteredArticle.slice(
-      indexOfFirstArticle,
-      indexOfLastArticle
-    );
+    console.log(filteredArticle);
 
-    const userArticles = currentArticles.map((article, id) => {
+    const userArticles = filteredArticle.map((article, id) => {
       let commentCount = 0;
       article.comments.map((comments) => {
         if (comments.is_approved === "Yes") {
@@ -132,10 +162,16 @@ class UserDashboard extends React.Component {
             <div className={classes.Articles}>{userArticles}</div>
             <br />
             <div className={classes.Pagination}>
-              <PaginationComponent
-                totalArticles={filteredArticle.length}
-                articlePerPage={this.state.articlePerPage}
-                paginate={this.paginate}
+              <Pagination
+                activePage={this.state.activePage}
+                itemsCountPerPage={this.state.itemsCountPerPage}
+                totalItemsCount={this.state.totalItemsCount}
+                pageRangeDisplayed={2}
+                onChange={(pageNumber) => this.getUserData(pageNumber)}
+                itemClass="page-item"
+                linkClass="page-link"
+                firstPageText="First"
+                lastPageText="Last"
               />
             </div>
           </React.Fragment>

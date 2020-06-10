@@ -54,9 +54,8 @@ class Header extends React.Component {
                 <div className={classes.LogoName}> @rticle.io </div>
               </Navbar.Brand>
             </Col>
-            {localStorage.getItem("is_admin") === "No" ||
-            localStorage.getItem("is_admin") === null ? (
-              localStorage.getItem("is_admin") === "No" ? (
+            {localStorage.getItem("api_token") !== null ? (
+              localStorage.getItem("api_token").slice(0, 5) === "14219" ? (
                 <Col>
                   <Nav className="mr-auto" style={{ width: "max-content" }}>
                     <Button className={classes.Header} href="/user-dashboard">
@@ -77,11 +76,11 @@ class Header extends React.Component {
               ) : (
                 <Col>
                   <Nav className="mr-auto" style={{ width: "max-content" }}>
-                    <Button className={classes.Header} href="/">
-                      Home
+                    <Button className={classes.Header} href="/admin-dashboard">
+                      Articles
                     </Button>
-                    <Button className={classes.Header} href="/write-article">
-                      Write Article
+                    <Button className={classes.Header} href="/comments">
+                      Comments
                     </Button>
                   </Nav>
                 </Col>
@@ -89,11 +88,11 @@ class Header extends React.Component {
             ) : (
               <Col>
                 <Nav className="mr-auto" style={{ width: "max-content" }}>
-                  <Button className={classes.Header} href="/admin-dashboard">
-                    Articles
+                  <Button className={classes.Header} href="/">
+                    Home
                   </Button>
-                  <Button className={classes.Header} href="/comments">
-                    Comments
+                  <Button className={classes.Header} href="/write-article">
+                    Write Article
                   </Button>
                 </Nav>
               </Col>
@@ -110,7 +109,7 @@ class Header extends React.Component {
               </Form>
             </Col>
 
-            {localStorage.getItem("username") === null ? (
+            {localStorage.getItem("api_token") === null ? (
               <Col>
                 <Nav className="mr-auto" style={{ width: "max-content" }}>
                   <Button className={classes.Header} href="/login">

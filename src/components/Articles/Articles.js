@@ -4,16 +4,22 @@ import classes from "./Articles.module.css";
 import { Redirect } from "react-router-dom";
 import Pagination from "react-js-pagination";
 
+// this class is used to render all the approved articles
+//  Search by title functionality is also implemented here
+
 class Articles extends React.Component {
   render() {
     if (
       localStorage.getItem("api_token") !== null &&
-      localStorage.getItem("is_admin") === "Yes"
+      localStorage.getItem("api_token").slice(0, 5) === "78357"
     ) {
       return <Redirect to="/admin-dashboard" />;
     }
+    
 
     let articles =
+      // if the search value is null then render all the
+      // approved articles
       this.props.value === null
         ? this.props.article.map((article, id) => {
             let commentCount = 0;
@@ -38,7 +44,8 @@ class Articles extends React.Component {
               return null;
             }
           })
-        : this.props.article.map((article, id) => {
+        : // render only the searched and matching articles
+          this.props.article.map((article, id) => {
             let commentCount = 0;
             article.comments.map((comments) => {
               if (comments.is_approved === "Yes") {
@@ -46,6 +53,8 @@ class Articles extends React.Component {
               }
               return null;
             });
+            // convert article title to lowercase and match it
+            // with the search value
             if (
               article.title
                 .toLowerCase()

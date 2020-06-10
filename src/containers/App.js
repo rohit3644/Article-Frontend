@@ -30,13 +30,7 @@ class App extends React.PureComponent {
       itemsCountPerPage: 1,
       totalItemsCount: 1,
     };
-    document.cookie = "username=John Doe; expires=Wed, 10 Jun 2020 12:30:00 UTC";
   }
-
-  handlePageChange = (pageNumber) => {
-    console.log(`active page is ${pageNumber}`);
-    this.setState({ activePage: pageNumber });
-  };
 
   componentDidMount() {
     this.getUserData();
@@ -64,25 +58,17 @@ class App extends React.PureComponent {
     });
   };
 
-  readMoreUrlHandler = () => {
-    this.setState({
-      readMoreUrl: this.props.location.pathname,
-    });
-  };
-
   render() {
     if (!this.state.isrender) {
       return <div className="loader">Loading...</div>;
     }
-    let readMore = this.state.article.map((article) => {
-      if (
-        this.props.location.pathname.replace("/", "").split("-").join(" ") ===
-        article.title.toLowerCase()
-      ) {
-        return article;
-      }
-      return null;
-    });
+
+    let readMore = this.props.location.pathname
+      .replace("/", "")
+      .split("-")
+      .join(" ");
+
+    console.log(readMore);
 
     return (
       <div>
@@ -95,7 +81,6 @@ class App extends React.PureComponent {
             <Route exact path="/">
               <Articles
                 value={this.state.searchValue}
-                readMore={this.readMoreUrlHandler}
                 article={this.state.article}
                 activePage={this.state.activePage}
                 itemsCountPerPage={this.state.itemsCountPerPage}
@@ -104,23 +89,23 @@ class App extends React.PureComponent {
               />
             </Route>
 
+            {/* done  */}
             <Route exact path="/write-article">
-              <WriteArticle articles={this.state.article} />
+              <WriteArticle />
             </Route>
+            {/* done  */}
             <Route exact path="/article-list">
-              <ArticleList article={this.state.article} />
+              <ArticleList />
             </Route>
             <Route exact path="/admin-dashboard">
-              <AdminDashboard articles={this.state.article} />
+              <AdminDashboard />
             </Route>
             <Route exact path="/comments">
               <Comments articles={this.state.article} />
             </Route>
+            {/* done  */}
             <Route exact path="/user-dashboard">
-              <UserDashboard
-                articles={this.state.article}
-                readMore={this.readMoreUrlHandler}
-              />
+              <UserDashboard />
             </Route>
             <Route exact path="/login">
               <Login />
@@ -134,6 +119,7 @@ class App extends React.PureComponent {
             <Route exact path="/contact">
               <Contact />
             </Route>
+            {/* done  */}
             <Route exact path={this.state.readMoreUrl}>
               <ReadMore article={readMore} />
             </Route>
