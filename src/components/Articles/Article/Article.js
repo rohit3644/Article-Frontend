@@ -13,7 +13,6 @@ class Article extends React.Component {
   };
 
   render() {
-
     // make a link from article titles
     const readMoreLink =
       "/" + this.props.title.split(" ").join("-").toLowerCase();
@@ -71,7 +70,7 @@ class Article extends React.Component {
               href={readMoreLink}
               onClick={this.props.readMore}
             >
-              Read More >>
+              Read More
             </Button>
           </Card.Body>
         </Card>

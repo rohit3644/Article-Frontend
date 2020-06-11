@@ -53,6 +53,7 @@ class Login extends React.Component {
           localStorage.setItem("username", response.data.user.name);
           // localStorage.setItem("is_admin", response.data.user.is_admin);
           // localStorage.setItem("user_id", response.data.user.id);
+          console.log("in login");
           if (response.data.user.is_admin === "Yes") {
             this.props.history.push("/admin-dashboard");
           } else {

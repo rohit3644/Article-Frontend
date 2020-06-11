@@ -5,7 +5,7 @@ import classes from "./AdminDashboard.module.css";
 import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import Pagination from "react-js-pagination";
-
+import AuthAxios from "../../Auth/Auth";
 class AdminDashboard extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -56,10 +56,12 @@ class AdminDashboard extends React.PureComponent {
     const data = {
       id: this.state.articleId,
     };
-    axios
-      .post("http://127.0.0.1:8000/api/delete-article", data)
+    AuthAxios.post("/delete-article", data)
       .then((response) => {
         console.log(response.data);
+        if (response.data.code === 401) {
+          window.alert("You are not allowed to delete this");
+        }
         this.setState({
           modalFlag: false,
         });

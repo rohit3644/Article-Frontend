@@ -10,6 +10,7 @@ import {
 import classes from "./WriteArticle.module.css";
 import Category from "./Category/Categories";
 import axios from "axios";
+import AuthAxios from "../Auth/Auth";
 
 const WriteArticle = (props) => {
   const inputEl = useRef(null);
@@ -21,32 +22,30 @@ const WriteArticle = (props) => {
       let data = {
         id: parseInt(localStorage.getItem("articleId")),
       };
-      axios
-        .post("http://127.0.0.1:8000/api/get-article", data)
-        .then((response) => {
-          console.log(response.data);
+      AuthAxios.post("/get-article", data).then((response) => {
+        console.log(response.data);
 
-            const selectedCategory = response.data.category.map((category) => {
-              return category.category;
-            });
-            console.log(selectedCategory);
-            setValue({
-              selectedCategory: selectedCategory,
-              title: response.data.title,
-              author_name: response.data.author_name,
-            });
-            fileSetValue({
-              fileLocation: response.data.image_name,
-            });
-            richTextEditorSetValue({
-              text: response.data.content,
-            });
-            localStorage.setItem("updateArticleUserId", response.data.user_id);
-            localStorage.setItem(
-              "updateArticleIsApproved",
-              response.data.is_approved
-            );
+        const selectedCategory = response.data.category.map((category) => {
+          return category.category;
         });
+        console.log(selectedCategory);
+        setValue({
+          selectedCategory: selectedCategory,
+          title: response.data.title,
+          author_name: response.data.author_name,
+        });
+        fileSetValue({
+          fileLocation: response.data.image_name,
+        });
+        richTextEditorSetValue({
+          text: response.data.content,
+        });
+        localStorage.setItem("updateArticleUserId", response.data.user_id);
+        localStorage.setItem(
+          "updateArticleIsApproved",
+          response.data.is_approved
+        );
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

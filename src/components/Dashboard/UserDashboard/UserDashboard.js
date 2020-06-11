@@ -3,12 +3,13 @@ import { withRouter, Redirect } from "react-router-dom";
 import Article from "../../Articles/Article/Article";
 import classes from "./UserDashboard.module.css";
 import { Modal, Button } from "react-bootstrap";
-import axios from "axios";
 import Pagination from "react-js-pagination";
+import axios from "axios";
 
 class UserDashboard extends React.Component {
   constructor(props) {
     super(props);
+    console.log("in user dashboard");
     console.log(this.props.location.pathname);
     this.state = {
       modalFlag: false,
@@ -22,27 +23,47 @@ class UserDashboard extends React.Component {
   }
 
   componentDidMount() {
+    if (localStorage.getItem("api_token") === null) {
+      return <Redirect to="/login" />;
+    } else if (
+      localStorage.getItem("api_token") !== null &&
+      localStorage.getItem("api_token").slice(0, 5) === "78357"
+    ) {
+      return <Redirect to="/admin-dashboard" />;
+    }
     this.getUserData();
   }
 
   getUserData = (pageNumber = 1) => {
+    let token = localStorage.getItem("api_token");
     axios
-      .post(`http://127.0.0.1:8000/api/user-article?page=${pageNumber}`, {
-        isAdmin:
-          localStorage.getItem("api_token").slice(0, 5) === "78357"
-            ? "Yes"
-            : "No",
-        id: parseInt(localStorage.getItem("api_token").slice(65)),
-      })
+      .post(
+        `http://127.0.0.1:8000/api/user-article?page=${pageNumber}`,
+        {
+          isAdmin:
+            localStorage.getItem("api_token").slice(0, 5) === "78357"
+              ? "Yes"
+              : "No",
+          id: parseInt(localStorage.getItem("api_token").slice(65)),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
       .then((response) => {
         console.log(response.data);
-        this.setState({
-          userArticles: [...response.data.articles.data],
-          activePage: response.data.articles.current_page,
-          itemsCountPerPage: response.data.articles.per_page,
-          totalItemsCount: response.data.articles.total,
-          isrender: true,
-        });
+        if (response.data.code === 401) {
+          window.alert(response.data.message);
+        } else {
+          this.setState({
+            userArticles: [...response.data.articles.data],
+            activePage: response.data.articles.current_page,
+            itemsCountPerPage: response.data.articles.per_page,
+            totalItemsCount: response.data.articles.total,
+            isrender: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
       });
   };
 
@@ -64,13 +85,17 @@ class UserDashboard extends React.Component {
       id: this.state.articleId,
     };
     axios
-      .post("http://127.0.0.1:8000/api/delete-article", data)
+      .post("/delete-article", data)
       .then((response) => {
         console.log(response.data);
-        this.setState({
-          modalFlag: false,
-        });
-        window.location.reload();
+        if (response.data.code === 401) {
+          window.alert("Dont delete");
+        } else {
+          this.setState({
+            modalFlag: false,
+          });
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.log(error.response);
@@ -88,14 +113,6 @@ class UserDashboard extends React.Component {
       return <div className="loader">Loading...</div>;
     }
 
-    if (localStorage.getItem("api_token") === null) {
-      return <Redirect to="/login" />;
-    } else if (
-      localStorage.getItem("api_token") !== null &&
-      localStorage.getItem("api_token").slice(0, 5) === "78357"
-    ) {
-      return <Redirect to="/admin-dashboard" />;
-    }
     console.log(this.props.articles);
     const articles = this.state.userArticles.map((article) => {
       if (
