@@ -10,7 +10,6 @@ import {
 import classes from "./WriteArticle.module.css";
 import Category from "./Category/Categories";
 import axios from "axios";
-import AuthAxios from "../Auth/Auth";
 
 const WriteArticle = (props) => {
   const inputEl = useRef(null);
@@ -22,30 +21,39 @@ const WriteArticle = (props) => {
       let data = {
         id: parseInt(localStorage.getItem("articleId")),
       };
-      AuthAxios.post("/get-article", data).then((response) => {
-        console.log(response.data);
+      axios
+        .post("http://127.0.0.1:8000/api/get-article", data, {
+          headers: { Authorization: `${localStorage.getItem("api_token")}` },
+        })
+        .then((response) => {
+          console.log(response.data);
 
-        const selectedCategory = response.data.category.map((category) => {
-          return category.category;
+          if (response.data.code === 401 || response.data.code === 201) {
+            localStorage.clear();
+            this.props.history.push("/login");
+          } else {
+            const selectedCategory = response.data.category.map((category) => {
+              return category.category;
+            });
+            console.log(selectedCategory);
+            setValue({
+              selectedCategory: selectedCategory,
+              title: response.data.title,
+              author_name: response.data.author_name,
+            });
+            fileSetValue({
+              fileLocation: response.data.image_name,
+            });
+            richTextEditorSetValue({
+              text: response.data.content,
+            });
+            localStorage.setItem("updateArticleUserId", response.data.user_id);
+            localStorage.setItem(
+              "updateArticleIsApproved",
+              response.data.is_approved
+            );
+          }
         });
-        console.log(selectedCategory);
-        setValue({
-          selectedCategory: selectedCategory,
-          title: response.data.title,
-          author_name: response.data.author_name,
-        });
-        fileSetValue({
-          fileLocation: response.data.image_name,
-        });
-        richTextEditorSetValue({
-          text: response.data.content,
-        });
-        localStorage.setItem("updateArticleUserId", response.data.user_id);
-        localStorage.setItem(
-          "updateArticleIsApproved",
-          response.data.is_approved
-        );
-      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -242,12 +250,21 @@ const WriteArticle = (props) => {
 
     let form_data = new FormData();
     let url = "http://127.0.0.1:8000/api/add-article";
+    let headers = {
+      headers: { "content-type": "multipart/form-data" },
+    };
     if (parseInt(localStorage.getItem("update")) === 0) {
       form_data.append(
         "articleId",
         parseInt(localStorage.getItem("articleId"))
       );
       url = "http://127.0.0.1:8000/api/update-article";
+      headers = {
+        headers: {
+          "content-type": "multipart/form-data",
+          Authorization: `${localStorage.getItem("api_token")}`,
+        },
+      };
     }
     if (fileValue.file !== undefined) {
       form_data.append("image", fileValue.file);
@@ -265,13 +282,8 @@ const WriteArticle = (props) => {
         localStorage.getItem("api_token").slice(0, 5) === "78357" ? "Yes" : "No"
       );
     }
-
     axios
-      .post(url, form_data, {
-        headers: {
-          "content-type": "multipart/form-data",
-        },
-      })
+      .post(url, form_data, headers)
       .then((response) => {
         console.log(response.data);
         if (response.data.code === 200) {
@@ -282,7 +294,7 @@ const WriteArticle = (props) => {
             msg: response.data.message,
             alertDismiss: true,
           });
-        } else if (response.data.code === 201) {
+        } else if (response.data.code === 201 || response.data.code === 401 ) {
           window.scrollTo(0, inputEl);
           SubmitSetValue({
             isArticleSubmitted: true,

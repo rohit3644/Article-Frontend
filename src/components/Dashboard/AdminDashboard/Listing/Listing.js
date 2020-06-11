@@ -26,10 +26,17 @@ class Listing extends React.Component {
           : "No",
     };
     axios
-      .post("http://127.0.0.1:8000/api/edit-comment", data)
+      .post("http://127.0.0.1:8000/api/edit-comment", data, {
+        headers: { Authorization: `${localStorage.getItem("api_token")}` },
+      })
       .then((response) => {
         console.log(response.data);
-        window.location.reload();
+        if (response.data.code === 401 || response.data.code === 201) {
+          localStorage.clear();
+          this.props.history.push("/login");
+        } else {
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.log(error.response);
@@ -63,10 +70,17 @@ class Listing extends React.Component {
           : "No",
     };
     axios
-      .post("http://127.0.0.1:8000/api/approve-article", data)
+      .post("http://127.0.0.1:8000/api/approve-article", data, {
+        headers: { Authorization: `${localStorage.getItem("api_token")}` },
+      })
       .then((response) => {
         console.log(response.data);
-        window.location.reload();
+        if (response.data.code === 401 || response.data.code === 201) {
+          localStorage.clear();
+          this.props.history.push("/login");
+        } else {
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.log(error.response);
@@ -81,9 +95,16 @@ class Listing extends React.Component {
           : "No",
     };
     axios
-      .post("http://127.0.0.1:8000/api/approve-comment", data)
+      .post("http://127.0.0.1:8000/api/approve-comment", data, {
+        headers: { Authorization: `${localStorage.getItem("api_token")}` },
+      })
       .then((response) => {
-        window.location.reload();
+        if (response.data.code === 401 || response.data.code === 201) {
+          localStorage.clear();
+          this.props.history.push("/login");
+        } else {
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.log(error.response);

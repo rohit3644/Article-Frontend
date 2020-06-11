@@ -59,13 +59,20 @@ class Comments extends React.PureComponent {
           : "No",
     };
     axios
-      .post("http://127.0.0.1:8000/api/delete-comment", data)
+      .post("http://127.0.0.1:8000/api/delete-comment", data, {
+        headers: { Authorization: `${localStorage.getItem("api_token")}` },
+      })
       .then((response) => {
         console.log(response.data);
-        this.setState({
-          modalFlag: false,
-        });
-        window.location.reload();
+        if (response.data.code === 401 || response.data.code === 201) {
+          localStorage.clear();
+          this.props.history.push("/login");
+        } else {
+          this.setState({
+            modalFlag: false,
+          });
+          window.location.reload();
+        }
       })
       .catch((error) => {
         console.log(error.response);

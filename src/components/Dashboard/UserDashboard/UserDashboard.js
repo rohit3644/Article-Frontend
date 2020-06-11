@@ -35,23 +35,23 @@ class UserDashboard extends React.Component {
   }
 
   getUserData = (pageNumber = 1) => {
-    let token = localStorage.getItem("api_token");
+    // let token = localStorage.getItem("api_token");
+    let data = {
+      isAdmin:
+        localStorage.getItem("api_token").slice(0, 5) === "78357"
+          ? "Yes"
+          : "No",
+      id: parseInt(localStorage.getItem("api_token").slice(65)),
+    };
     axios
-      .post(
-        `http://127.0.0.1:8000/api/user-article?page=${pageNumber}`,
-        {
-          isAdmin:
-            localStorage.getItem("api_token").slice(0, 5) === "78357"
-              ? "Yes"
-              : "No",
-          id: parseInt(localStorage.getItem("api_token").slice(65)),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
+      .post(`http://127.0.0.1:8000/api/user-article?page=${pageNumber}`, data, {
+        headers: { Authorization: `${localStorage.getItem("api_token")}` },
+      })
       .then((response) => {
         console.log(response.data);
-        if (response.data.code === 401) {
-          window.alert(response.data.message);
+        if (response.data.code === 401 || response.data.code === 201) {
+          localStorage.clear();
+          this.props.history.push("/login");
         } else {
           this.setState({
             userArticles: [...response.data.articles.data],
@@ -85,11 +85,14 @@ class UserDashboard extends React.Component {
       id: this.state.articleId,
     };
     axios
-      .post("/delete-article", data)
+      .post("http://127.0.0.1:8000/api/delete-article", data, {
+        headers: { Authorization: `${localStorage.getItem("api_token")}` },
+      })
       .then((response) => {
         console.log(response.data);
-        if (response.data.code === 401) {
-          window.alert("Dont delete");
+        if (response.data.code === 401 || response.data.code === 201) {
+          localStorage.clear();
+          this.props.history.push("/login");
         } else {
           this.setState({
             modalFlag: false,
@@ -102,11 +105,6 @@ class UserDashboard extends React.Component {
       });
   };
 
-  paginate = (pageNumber) => {
-    this.setState({
-      currentPage: pageNumber,
-    });
-  };
 
   render() {
     if (!this.state.isrender) {
