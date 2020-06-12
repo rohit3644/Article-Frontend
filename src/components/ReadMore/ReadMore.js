@@ -3,11 +3,11 @@ import { Container, Button, Form } from "react-bootstrap";
 import classes from "./ReadMore.module.css";
 import axios from "axios";
 import Comments from "./Comments/Comments";
+import parse from "html-react-parser";
 
 class ReadMore extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this.props);
     this.state = {
       article: null,
       isrender: false,
@@ -27,12 +27,11 @@ class ReadMore extends React.Component {
     const data = {
       article: this.props.article,
     };
-    axios.post("http://127.0.0.1:8000/api/read-more", data).then((response) => {
+    axios.post("/read-more", data).then((response) => {
       if (response.data === -1) {
         this.setState({ isrender: true, article: {} });
       } else {
         let category = [];
-        console.log(response.data);
         response.data.category.map((ele) => {
           return category.push(ele.category);
         });
@@ -44,7 +43,6 @@ class ReadMore extends React.Component {
           article: response.data,
           commentsArray: response.data.comments,
         });
-        console.log(this.state);
       }
     });
   }
@@ -87,7 +85,6 @@ class ReadMore extends React.Component {
           ? ""
           : this.state.article.articleUser.email,
       articleName: this.state.article.title,
-      // isAdmin: "Yes",
     };
     if (localStorage.getItem("api_token") !== null) {
       data["isAdmin"] =
@@ -97,22 +94,23 @@ class ReadMore extends React.Component {
     }
 
     axios
-      .post("http://127.0.0.1:8000/api/add-comment", data)
+      .post("/add-comment", data)
       .then((response) => {
         if (response.data.code === 200) {
-          console.log(response.data.info);
           this.setState({
             commentsArray: [
               this.state.article.comments,
               ...response.data.info.comments,
             ],
-            commentMsg: "Successfully added the comment",
+            commentMsg:
+              localStorage.getItem("api_token") !== null
+                ? "Successfully added the comment"
+                : "Comment added successfully and will be displayed once reviewed by our team",
             commentSuccess: true,
             commentUpdate: true,
             newCommentUser: response.data.info.user,
           });
         } else {
-          console.log(response.data);
           this.setState({
             commentMsg: response.data.message,
             commentSuccess: false,
@@ -139,13 +137,10 @@ class ReadMore extends React.Component {
     let comments = null;
 
     if (Object.keys(this.state.article).length > 0) {
-      console.log("this is render");
 
       let filteredCommentArray = this.state.commentsArray.filter((comment) => {
         return comment.is_approved === "Yes";
       });
-
-      console.log(filteredCommentArray);
 
       comments =
         filteredCommentArray.length > 0
@@ -178,7 +173,7 @@ class ReadMore extends React.Component {
               Category: <a href="/article-list">{this.state.category}</a>
             </strong>
             <hr />
-            <p>{this.state.article.content}</p>
+            {parse(parse(this.state.article.content))}
             <hr />
             <p>Author: {this.state.article.author_name}</p>
             <hr />

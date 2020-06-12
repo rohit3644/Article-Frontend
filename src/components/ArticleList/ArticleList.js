@@ -14,8 +14,7 @@ class ArticleList extends React.Component {
   }
 
   componentDidMount() {
-    axios.get(`http://127.0.0.1:8000/api/all-articles`).then((response) => {
-      console.log(response.data);
+    axios.get(`/all-articles`).then((response) => {
       this.setState({
         articles: response.data,
       });
@@ -46,7 +45,6 @@ class ArticleList extends React.Component {
       }
       return null;
     });
-    console.log(articleCategories);
     // converting the article category object into array
     const cat = Object.keys(articleCategories).map((cat, id) => {
       let title = articleCategories[cat];

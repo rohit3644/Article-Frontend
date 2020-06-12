@@ -131,9 +131,8 @@ class Register extends React.Component {
     };
 
     axios
-      .post("http://127.0.0.1:8000/api/register", data)
+      .post("/register", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data === 1) {
           this.setState({ isRegistered: true });
         } else if (response.data === -1) {

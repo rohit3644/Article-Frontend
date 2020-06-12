@@ -45,15 +45,11 @@ class Login extends React.Component {
     };
 
     axios
-      .post("http://127.0.0.1:8000/api/login", data)
+      .post("/login", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           localStorage.setItem("api_token", response.data.api_key);
           localStorage.setItem("username", response.data.user.name);
-          // localStorage.setItem("is_admin", response.data.user.is_admin);
-          // localStorage.setItem("user_id", response.data.user.id);
-          console.log("in login");
           if (response.data.user.is_admin === "Yes") {
             this.props.history.push("/admin-dashboard");
           } else {

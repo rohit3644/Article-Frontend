@@ -9,8 +9,6 @@ import axios from "axios";
 class UserDashboard extends React.Component {
   constructor(props) {
     super(props);
-    console.log("in user dashboard");
-    console.log(this.props.location.pathname);
     this.state = {
       modalFlag: false,
       articleId: 0,
@@ -44,11 +42,10 @@ class UserDashboard extends React.Component {
       id: parseInt(localStorage.getItem("api_token").slice(65)),
     };
     axios
-      .post(`http://127.0.0.1:8000/api/user-article?page=${pageNumber}`, data, {
+      .post(`/user-article?page=${pageNumber}`, data, {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 401 || response.data.code === 201) {
           localStorage.clear();
           this.props.history.push("/login");
@@ -85,11 +82,10 @@ class UserDashboard extends React.Component {
       id: this.state.articleId,
     };
     axios
-      .post("http://127.0.0.1:8000/api/delete-article", data, {
+      .post("/delete-article", data, {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 401 || response.data.code === 201) {
           localStorage.clear();
           this.props.history.push("/login");
@@ -111,7 +107,6 @@ class UserDashboard extends React.Component {
       return <div className="loader">Loading...</div>;
     }
 
-    console.log(this.props.articles);
     const articles = this.state.userArticles.map((article) => {
       if (
         article.user_id ===
@@ -125,7 +120,6 @@ class UserDashboard extends React.Component {
       return el != null;
     });
 
-    console.log(filteredArticle);
 
     const userArticles = filteredArticle.map((article, id) => {
       let commentCount = 0;

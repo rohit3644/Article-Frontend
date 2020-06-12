@@ -10,6 +10,8 @@ import {
 import classes from "./WriteArticle.module.css";
 import Category from "./Category/Categories";
 import axios from "axios";
+import CKEditor from "react-ckeditor-component";
+import parse from "html-react-parser";
 
 const WriteArticle = (props) => {
   const inputEl = useRef(null);
@@ -17,17 +19,14 @@ const WriteArticle = (props) => {
   useEffect(() => {
     if (parseInt(localStorage.getItem("update")) === 1) {
       localStorage.setItem("update", 0);
-      console.log(parseInt(localStorage.getItem("articleId")));
       let data = {
         id: parseInt(localStorage.getItem("articleId")),
       };
       axios
-        .post("http://127.0.0.1:8000/api/get-article", data, {
+        .post("/get-article", data, {
           headers: { Authorization: `${localStorage.getItem("api_token")}` },
         })
         .then((response) => {
-          console.log(response.data);
-
           if (response.data.code === 401 || response.data.code === 201) {
             localStorage.clear();
             this.props.history.push("/login");
@@ -35,7 +34,6 @@ const WriteArticle = (props) => {
             const selectedCategory = response.data.category.map((category) => {
               return category.category;
             });
-            console.log(selectedCategory);
             setValue({
               selectedCategory: selectedCategory,
               title: response.data.title,
@@ -45,7 +43,7 @@ const WriteArticle = (props) => {
               fileLocation: response.data.image_name,
             });
             richTextEditorSetValue({
-              text: response.data.content,
+              text: parse(response.data.content),
             });
             localStorage.setItem("updateArticleUserId", response.data.user_id);
             localStorage.setItem(
@@ -159,10 +157,7 @@ const WriteArticle = (props) => {
     });
   };
 
-  console.log(richTextEditorValue.text);
-
   const validations = (value, richTextEditorValue, fileValue) => {
-    console.log("not update");
     let error = "";
     if (value.selectedCategory.length === 0) {
       error = "Category cannot be null";
@@ -195,7 +190,6 @@ const WriteArticle = (props) => {
   };
 
   const validationsUpdate = (value, richTextEditorValue) => {
-    console.log("update");
     let error = "";
     if (value.selectedCategory.length === 0) {
       error = "Category cannot be null";
@@ -249,7 +243,7 @@ const WriteArticle = (props) => {
     }
 
     let form_data = new FormData();
-    let url = "http://127.0.0.1:8000/api/add-article";
+    let url = "/add-article";
     let headers = {
       headers: { "content-type": "multipart/form-data" },
     };
@@ -258,7 +252,7 @@ const WriteArticle = (props) => {
         "articleId",
         parseInt(localStorage.getItem("articleId"))
       );
-      url = "http://127.0.0.1:8000/api/update-article";
+      url = "/update-article";
       headers = {
         headers: {
           "content-type": "multipart/form-data",
@@ -285,7 +279,6 @@ const WriteArticle = (props) => {
     axios
       .post(url, form_data, headers)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           window.scrollTo(0, inputEl);
           SubmitSetValue({
@@ -294,7 +287,7 @@ const WriteArticle = (props) => {
             msg: response.data.message,
             alertDismiss: true,
           });
-        } else if (response.data.code === 201 || response.data.code === 401 ) {
+        } else if (response.data.code === 201 || response.data.code === 401) {
           window.scrollTo(0, inputEl);
           SubmitSetValue({
             isArticleSubmitted: true,
@@ -309,9 +302,10 @@ const WriteArticle = (props) => {
       });
   };
 
-  const richTextChange = (event) => {
+  const onChange = (evt) => {
+    var newContent = evt.editor.getData();
     richTextEditorSetValue({
-      text: event.target.value,
+      text: newContent,
     });
   };
 
@@ -388,11 +382,12 @@ const WriteArticle = (props) => {
 
           <Form.Group controlId="formBasicContent">
             <Form.Label>Content</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows="3"
-              onChange={richTextChange}
-              defaultValue={richTextEditorValue.text}
+            <CKEditor
+              activeClass="p10"
+              content={richTextEditorValue.text}
+              events={{
+                change: onChange,
+              }}
             />
           </Form.Group>
 

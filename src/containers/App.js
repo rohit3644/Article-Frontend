@@ -2,20 +2,10 @@ import React from "react";
 import "./App.css";
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
-import About from "../components/About/About";
-import Contact from "../components/Contact/Contact";
 import { Route, Switch, withRouter } from "react-router-dom";
-import Articles from "../components/Articles/Articles";
 import { Container } from "react-bootstrap";
-import WriteArticle from "../components/WriteArticle/WriteArticle";
-import Login from "../components/Login/Login";
-import Register from "../components/Register/Register";
-import ReadMore from "../components/ReadMore/ReadMore";
 import axios from "axios";
-import AdminDashboard from "../components/Dashboard/AdminDashboard/AdminDashboard";
-import UserDashboard from "../components/Dashboard/UserDashboard/UserDashboard";
-import ArticleList from "../components/ArticleList/ArticleList";
-import Comments from "../components/Dashboard/AdminDashboard/Comments/Comments";
+import routeList from "../Routes/Routes";
 
 class App extends React.PureComponent {
   constructor(props) {
@@ -38,9 +28,8 @@ class App extends React.PureComponent {
 
   getUserData = (pageNumber = 1) => {
     axios
-      .get(`http://127.0.0.1:8000/api/article?page=${pageNumber}`)
+      .get(`/article?page=${pageNumber}`)
       .then((response) => {
-        console.log(response.data);
         this.setState({
           article: [...response.data.articles.data],
           activePage: response.data.articles.current_page,
@@ -68,7 +57,23 @@ class App extends React.PureComponent {
       .split("-")
       .join(" ");
 
-    console.log(readMore);
+    const data = {
+      value: this.state.searchValue,
+      article: this.state.article,
+      activePage: this.state.activePage,
+      itemsCountPerPage: this.state.itemsCountPerPage,
+      totalItemsCount: this.state.totalItemsCount,
+      getUserData: this.getUserData,
+      readMore: readMore,
+    };
+
+    let routesLink = routeList(data).map((route, id) => {
+      return (
+        <Route key={id} exact path={route.path}>
+          {route.component}
+        </Route>
+      );
+    });
 
     return (
       <div>
@@ -77,53 +82,7 @@ class App extends React.PureComponent {
           display={this.props.location.pathname === "/" ? "block" : "none"}
         />
         <Container className="Container">
-          <Switch>
-            <Route exact path="/">
-              <Articles
-                value={this.state.searchValue}
-                article={this.state.article}
-                activePage={this.state.activePage}
-                itemsCountPerPage={this.state.itemsCountPerPage}
-                totalItemsCount={this.state.totalItemsCount}
-                getUserData={this.getUserData}
-              />
-            </Route>
-
-            {/* done  */}
-            <Route exact path="/write-article">
-              <WriteArticle />
-            </Route>
-            {/* done  */}
-            <Route exact path="/article-list">
-              <ArticleList />
-            </Route>
-            <Route exact path="/admin-dashboard">
-              <AdminDashboard />
-            </Route>
-            <Route exact path="/comments">
-              <Comments articles={this.state.article} />
-            </Route>
-            {/* done  */}
-            <Route exact path="/user-dashboard">
-              <UserDashboard />
-            </Route>
-            <Route exact path="/login">
-              <Login />
-            </Route>
-            <Route exact path="/register">
-              <Register />
-            </Route>
-            <Route exact path="/about">
-              <About />
-            </Route>
-            <Route exact path="/contact">
-              <Contact />
-            </Route>
-            {/* done  */}
-            <Route exact path={this.state.readMoreUrl}>
-              <ReadMore article={readMore} />
-            </Route>
-          </Switch>
+          <Switch>{routesLink}</Switch>
         </Container>
         <Footer />
       </div>

@@ -16,6 +16,7 @@ class AdminDashboard extends React.PureComponent {
       itemsCountPerPage: 1,
       totalItemsCount: 1,
       articles: [],
+      isrender: false,
     };
   }
 
@@ -24,17 +25,15 @@ class AdminDashboard extends React.PureComponent {
   }
 
   getUserData = (pageNumber = 1) => {
-    axios
-      .get(`http://127.0.0.1:8000/api/article?page=${pageNumber}`)
-      .then((response) => {
-        console.log(response.data);
-        this.setState({
-          articles: [...response.data.articles.data],
-          activePage: response.data.articles.current_page,
-          itemsCountPerPage: response.data.articles.per_page,
-          totalItemsCount: response.data.articles.total,
-        });
+    axios.get(`/article?page=${pageNumber}`).then((response) => {
+      this.setState({
+        articles: [...response.data.articles.data],
+        activePage: response.data.articles.current_page,
+        itemsCountPerPage: response.data.articles.per_page,
+        totalItemsCount: response.data.articles.total,
+        isrender: true,
       });
+    });
   };
 
   //modal close
@@ -57,11 +56,10 @@ class AdminDashboard extends React.PureComponent {
       id: this.state.articleId,
     };
     axios
-      .post("http://127.0.0.1:8000/api/delete-article", data, {
+      .post("/delete-article", data, {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 401 || response.data.code === 201) {
           localStorage.clear();
           this.props.history.push("/login");
@@ -87,7 +85,10 @@ class AdminDashboard extends React.PureComponent {
     ) {
       return <Redirect to="/user-dashboard" />;
     }
-    console.log(this.state.articles);
+
+    if (!this.state.isrender) {
+      return <div className="loader">Loading...</div>;
+    }
 
     const articles = this.state.articles.map((article, id) => {
       let categories = [];
@@ -106,7 +107,6 @@ class AdminDashboard extends React.PureComponent {
         />
       );
     });
-
     return (
       <div>
         <>
@@ -129,21 +129,27 @@ class AdminDashboard extends React.PureComponent {
         </>
         <h2 style={{ textAlign: "center" }}>Articles</h2>
         <hr />
-        <div className={classes.Article}>{articles}</div>
-        <br />
-        <div className={classes.Pagination}>
-          <Pagination
-            activePage={this.state.activePage}
-            itemsCountPerPage={this.state.itemsCountPerPage}
-            totalItemsCount={this.state.totalItemsCount}
-            pageRangeDisplayed={2}
-            onChange={(pageNumber) => this.getUserData(pageNumber)}
-            itemClass="page-item"
-            linkClass="page-link"
-            firstPageText="First"
-            lastPageText="Last"
-          />
-        </div>
+        {articles.length > 0 ? (
+          <React.Fragment>
+            <div className={classes.Article}>{articles}</div>
+            <br />
+            <div className={classes.Pagination}>
+              <Pagination
+                activePage={this.state.activePage}
+                itemsCountPerPage={this.state.itemsCountPerPage}
+                totalItemsCount={this.state.totalItemsCount}
+                pageRangeDisplayed={2}
+                onChange={(pageNumber) => this.getUserData(pageNumber)}
+                itemClass="page-item"
+                linkClass="page-link"
+                firstPageText="First"
+                lastPageText="Last"
+              />
+            </div>
+          </React.Fragment>
+        ) : (
+          <h2 className={classes.Empty}>No articles to display</h2>
+        )}
       </div>
     );
   }

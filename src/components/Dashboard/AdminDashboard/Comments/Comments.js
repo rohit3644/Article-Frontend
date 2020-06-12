@@ -16,6 +16,7 @@ class Comments extends React.PureComponent {
       itemsCountPerPage: 1,
       totalItemsCount: 1,
       articles: [],
+      isrender: false,
     };
   }
 
@@ -25,14 +26,14 @@ class Comments extends React.PureComponent {
 
   getUserData = (pageNumber = 1) => {
     axios
-      .get(`http://127.0.0.1:8000/api/article?page=${pageNumber}`)
+      .get(`/article?page=${pageNumber}`)
       .then((response) => {
-        console.log(response.data);
         this.setState({
           articles: [...response.data.articles.data],
           activePage: response.data.articles.current_page,
           itemsCountPerPage: response.data.articles.per_page,
           totalItemsCount: response.data.articles.total,
+          isrender: true,
         });
       });
   };
@@ -59,11 +60,10 @@ class Comments extends React.PureComponent {
           : "No",
     };
     axios
-      .post("http://127.0.0.1:8000/api/delete-comment", data, {
+      .post("/delete-comment", data, {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 401 || response.data.code === 201) {
           localStorage.clear();
           this.props.history.push("/login");
@@ -94,10 +94,15 @@ class Comments extends React.PureComponent {
     ) {
       return <Redirect to="/user-dashboard" />;
     }
-    console.log(this.state.articles);
 
+    if (!this.state.isrender) {
+      return <div className="loader">Loading...</div>;
+    }
+
+    let commentCount = 0;
     const comments = this.state.articles.map((article) => {
       return article.comments.map((commentsArray, id) => {
+        commentCount += 1;
         return (
           <Listing
             key={id}
@@ -111,6 +116,7 @@ class Comments extends React.PureComponent {
         );
       });
     });
+    console.log(commentCount);
 
     return (
       <div>
@@ -134,21 +140,27 @@ class Comments extends React.PureComponent {
         </>
         <h2 style={{ textAlign: "center" }}>Comments</h2>
         <hr />
-        <div className={classes.Comments}>{comments}</div>
-        <br />
-        <div className={classes.Pagination}>
-          <Pagination
-            activePage={this.state.activePage}
-            itemsCountPerPage={this.state.itemsCountPerPage}
-            totalItemsCount={this.state.totalItemsCount}
-            pageRangeDisplayed={2}
-            onChange={(pageNumber) => this.getUserData(pageNumber)}
-            itemClass="page-item"
-            linkClass="page-link"
-            firstPageText="First"
-            lastPageText="Last"
-          />
-        </div>
+        {commentCount > 0 ? (
+          <React.Fragment>
+            <div className={classes.Comments}>{comments}</div>
+            <br />
+            <div className={classes.Pagination}>
+              <Pagination
+                activePage={this.state.activePage}
+                itemsCountPerPage={this.state.itemsCountPerPage}
+                totalItemsCount={this.state.totalItemsCount}
+                pageRangeDisplayed={2}
+                onChange={(pageNumber) => this.getUserData(pageNumber)}
+                itemClass="page-item"
+                linkClass="page-link"
+                firstPageText="First"
+                lastPageText="Last"
+              />
+            </div>
+          </React.Fragment>
+        ) : (
+          <h2 className={classes.Empty}>No comments to display</h2>
+        )}
       </div>
     );
   }

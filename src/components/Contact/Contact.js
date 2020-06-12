@@ -35,9 +35,8 @@ class Contact extends React.Component {
           : "No";
     }
     axios
-      .post("http://127.0.0.1:8000/api/contact", data)
+      .post("/contact", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           this.setState({
             feedbackMsg: response.data.message,

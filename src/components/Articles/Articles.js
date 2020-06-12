@@ -15,7 +15,6 @@ class Articles extends React.Component {
     ) {
       return <Redirect to="/admin-dashboard" />;
     }
-    
 
     let articles =
       // if the search value is null then render all the
@@ -76,12 +75,14 @@ class Articles extends React.Component {
             }
           });
 
-    console.log(this.props.article);
+    let filteredArticles = articles.filter((el) => {
+      return el !== null;
+    });
     return (
       <div>
         <h3 className={classes.ArticleStyle}>Popular Articles</h3>
         <hr />
-        {this.props.article.length > 0 ? (
+        {filteredArticles.length > 0 ? (
           <React.Fragment>
             <div className={classes.Articles}>{articles}</div>
             <br />
