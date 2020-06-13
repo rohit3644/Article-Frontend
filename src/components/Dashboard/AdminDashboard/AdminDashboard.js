@@ -26,13 +26,17 @@ class AdminDashboard extends React.PureComponent {
 
   getUserData = (pageNumber = 1) => {
     axios.get(`/article?page=${pageNumber}`).then((response) => {
-      this.setState({
-        articles: [...response.data.articles.data],
-        activePage: response.data.articles.current_page,
-        itemsCountPerPage: response.data.articles.per_page,
-        totalItemsCount: response.data.articles.total,
-        isrender: true,
-      });
+      if (response.data.code === 200) {
+        this.setState({
+          articles: [...response.data.info.articles.data],
+          activePage: response.data.info.articles.current_page,
+          itemsCountPerPage: response.data.info.articles.per_page,
+          totalItemsCount: response.data.info.articles.total,
+          isrender: true,
+        });
+      } else {
+        window.alert(response.data.message);
+      }
     });
   };
 
@@ -60,9 +64,11 @@ class AdminDashboard extends React.PureComponent {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert("Internal Server Error");
         } else {
           this.setState({
             modalFlag: false,

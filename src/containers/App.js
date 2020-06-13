@@ -27,18 +27,20 @@ class App extends React.PureComponent {
   }
 
   getUserData = (pageNumber = 1) => {
-    axios
-      .get(`/article?page=${pageNumber}`)
-      .then((response) => {
+    axios.get(`/article?page=${pageNumber}`).then((response) => {
+      if (response.data.code === 200) {
         this.setState({
-          article: [...response.data.articles.data],
-          activePage: response.data.articles.current_page,
-          itemsCountPerPage: response.data.articles.per_page,
-          totalItemsCount: response.data.articles.total,
+          article: [...response.data.info.articles.data],
+          activePage: response.data.info.articles.current_page,
+          itemsCountPerPage: response.data.info.articles.per_page,
+          totalItemsCount: response.data.info.articles.total,
           isrender: true,
-          users: [...response.data.users.data],
+          users: [...response.data.info.users.data],
         });
-      });
+      } else {
+        window.alert(response.data.message);
+      }
+    });
   };
 
   searchValueHandler = (event) => {

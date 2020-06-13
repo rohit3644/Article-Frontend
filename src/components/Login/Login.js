@@ -48,9 +48,9 @@ class Login extends React.Component {
       .post("/login", data)
       .then((response) => {
         if (response.data.code === 200) {
-          localStorage.setItem("api_token", response.data.api_key);
-          localStorage.setItem("username", response.data.user.name);
-          if (response.data.user.is_admin === "Yes") {
+          localStorage.setItem("api_token", response.data.info.api_key);
+          localStorage.setItem("username", response.data.info.user.name);
+          if (response.data.info.user.is_admin === "Yes") {
             this.props.history.push("/admin-dashboard");
           } else {
             this.props.history.push("/user-dashboard");
@@ -66,6 +66,12 @@ class Login extends React.Component {
       })
       .catch((error) => {
         console.log(error.response);
+        window.scrollTo(0, this.errorRef);
+        this.setState({
+          error: true,
+          errorMsg: error.response.data.message,
+          alertDismiss: true,
+        });
       });
   };
 

@@ -30,9 +30,11 @@ class ReadMore extends React.Component {
     axios.post("/read-more", data).then((response) => {
       if (response.data === -1) {
         this.setState({ isrender: true, article: {} });
+      } else if (response.data.code === 500) {
+        window.alert(response.data.message);
       } else {
         let category = [];
-        response.data.category.map((ele) => {
+        response.data.info.category.map((ele) => {
           return category.push(ele.category);
         });
 
@@ -40,8 +42,8 @@ class ReadMore extends React.Component {
         this.setState({
           isrender: true,
           category: str,
-          article: response.data,
-          commentsArray: response.data.comments,
+          article: response.data.info,
+          commentsArray: response.data.info.comments,
         });
       }
     });
@@ -137,7 +139,6 @@ class ReadMore extends React.Component {
     let comments = null;
 
     if (Object.keys(this.state.article).length > 0) {
-
       let filteredCommentArray = this.state.commentsArray.filter((comment) => {
         return comment.is_approved === "Yes";
       });

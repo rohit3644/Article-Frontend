@@ -133,16 +133,17 @@ class Register extends React.Component {
     axios
       .post("/register", data)
       .then((response) => {
-        if (response.data === 1) {
+        if (response.data.code === 200) {
           this.setState({ isRegistered: true });
-        } else if (response.data === -1) {
-          this.setState({ backendError: "Registration Failed" });
+        } else if (response.data === 500) {
+          this.setState({ backendError: response.data.message });
         } else {
           this.setState({ backendError: response.data.message });
         }
       })
       .catch((error) => {
         console.log(error.response);
+        this.setState({ backendError: error.response.data.message });
       });
   };
 

@@ -15,9 +15,13 @@ class ArticleList extends React.Component {
 
   componentDidMount() {
     axios.get(`/all-articles`).then((response) => {
-      this.setState({
-        articles: response.data,
-      });
+      if (response.data.code === 200) {
+        this.setState({
+          articles: response.data.info,
+        });
+      } else {
+        window.alert(response.data.message);
+      }
     });
   }
 

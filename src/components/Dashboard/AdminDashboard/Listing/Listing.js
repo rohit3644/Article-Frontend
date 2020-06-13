@@ -30,9 +30,11 @@ class Listing extends React.Component {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert(response.data.message);
         } else {
           window.location.reload();
         }
@@ -73,9 +75,11 @@ class Listing extends React.Component {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert(response.data.message);
         } else {
           window.location.reload();
         }
@@ -97,9 +101,11 @@ class Listing extends React.Component {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert(response.data.message);
         } else {
           window.location.reload();
         }

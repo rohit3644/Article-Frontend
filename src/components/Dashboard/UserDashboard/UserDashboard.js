@@ -46,15 +46,17 @@ class UserDashboard extends React.Component {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert(response.data.message);
         } else {
           this.setState({
-            userArticles: [...response.data.articles.data],
-            activePage: response.data.articles.current_page,
-            itemsCountPerPage: response.data.articles.per_page,
-            totalItemsCount: response.data.articles.total,
+            userArticles: [...response.data.info.data],
+            activePage: response.data.info.current_page,
+            itemsCountPerPage: response.data.info.per_page,
+            totalItemsCount: response.data.info.total,
             isrender: true,
           });
         }
@@ -86,9 +88,11 @@ class UserDashboard extends React.Component {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert("Internal Server Error");
         } else {
           this.setState({
             modalFlag: false,
@@ -100,7 +104,6 @@ class UserDashboard extends React.Component {
         console.log(error.response);
       });
   };
-
 
   render() {
     if (!this.state.isrender) {
@@ -119,7 +122,6 @@ class UserDashboard extends React.Component {
     const filteredArticle = articles.filter((el) => {
       return el != null;
     });
-
 
     const userArticles = filteredArticle.map((article, id) => {
       let commentCount = 0;

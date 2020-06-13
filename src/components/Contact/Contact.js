@@ -52,6 +52,11 @@ class Contact extends React.Component {
       })
       .catch((error) => {
         console.log(error.response);
+        this.setState({
+          feedbackMsg: error.response.data.message,
+          submitted: true,
+          error: true,
+        });
       });
   };
 

@@ -27,28 +27,35 @@ const WriteArticle = (props) => {
           headers: { Authorization: `${localStorage.getItem("api_token")}` },
         })
         .then((response) => {
-          if (response.data.code === 401 || response.data.code === 201) {
+          if (response.data.code === 401) {
             localStorage.clear();
             this.props.history.push("/login");
+          } else if (response.data.code === 500) {
+            window.alert(response.data.message);
           } else {
-            const selectedCategory = response.data.category.map((category) => {
-              return category.category;
-            });
+            const selectedCategory = response.data.info.category.map(
+              (category) => {
+                return category.category;
+              }
+            );
             setValue({
               selectedCategory: selectedCategory,
-              title: response.data.title,
-              author_name: response.data.author_name,
+              title: response.data.info.title,
+              author_name: response.data.info.author_name,
             });
             fileSetValue({
-              fileLocation: response.data.image_name,
+              fileLocation: response.data.info.image_name,
             });
             richTextEditorSetValue({
-              text: parse(response.data.content),
+              text: parse(response.data.info.content),
             });
-            localStorage.setItem("updateArticleUserId", response.data.user_id);
+            localStorage.setItem(
+              "updateArticleUserId",
+              response.data.info.user_id
+            );
             localStorage.setItem(
               "updateArticleIsApproved",
-              response.data.is_approved
+              response.data.info.is_approved
             );
           }
         });
@@ -157,48 +164,37 @@ const WriteArticle = (props) => {
     });
   };
 
-  const validations = (value, richTextEditorValue, fileValue) => {
+  const validations = (value, richTextEditorValue, fileValue = null) => {
     let error = "";
     if (value.selectedCategory.length === 0) {
       error = "Category cannot be null";
     } else if (value.title.length === 0) {
       error = "Title cannot be null";
+    } else if (!value.title.match(/^([a-zA-z]+\s)*[a-zA-z]+$/)) {
+      error = "Only Letters Allowed in Title";
     } else if (value.author_name.length === 0) {
       error = "Author Name cannot be null";
     } else if (richTextEditorValue.text.length === 0) {
       error = "Content cannot be null";
-    } else if (fileValue.fileLocation === "") {
-      error = "Please upload an image";
-    } else {
-      let Extension = fileValue.fileName
-        .substring(fileValue.fileName.lastIndexOf(".") + 1)
-        .toLowerCase();
+    } else if (fileValue != null) {
+      if (fileValue.fileLocation === "") {
+        error = "Please upload an image";
+      } else {
+        let Extension = fileValue.fileName
+          .substring(fileValue.fileName.lastIndexOf(".") + 1)
+          .toLowerCase();
 
-      //The file uploaded is an image
+        //The file uploaded is an image
 
-      if (
-        Extension !== "gif" &&
-        Extension !== "png" &&
-        Extension !== "jpeg" &&
-        Extension !== "jpg"
-      ) {
-        error = "Image of type gif,png,jpeg and jpg allowed";
+        if (
+          Extension !== "gif" &&
+          Extension !== "png" &&
+          Extension !== "jpeg" &&
+          Extension !== "jpg"
+        ) {
+          error = "Image of type gif,png,jpeg and jpg allowed";
+        }
       }
-    }
-
-    return error;
-  };
-
-  const validationsUpdate = (value, richTextEditorValue) => {
-    let error = "";
-    if (value.selectedCategory.length === 0) {
-      error = "Category cannot be null";
-    } else if (value.title.length === 0) {
-      error = "Title cannot be null";
-    } else if (value.author_name.length === 0) {
-      error = "Author Name cannot be null";
-    } else if (richTextEditorValue.text.length === 0) {
-      error = "Content cannot be null";
     }
     return error;
   };
@@ -212,7 +208,7 @@ const WriteArticle = (props) => {
     ) {
       error = validations(value, richTextEditorValue, fileValue);
     } else {
-      error = validationsUpdate(value, richTextEditorValue);
+      error = validations(value, richTextEditorValue);
     }
 
     if (error !== "") {
@@ -269,7 +265,6 @@ const WriteArticle = (props) => {
     form_data.append("content", richTextEditorValue.text);
     form_data.append("isApproved", is_approved);
     form_data.append("userId", user_id);
-    // form_data.append("isAdmin", "Yes");
     if (localStorage.getItem("api_token") !== null) {
       form_data.append(
         "isAdmin",
@@ -287,7 +282,7 @@ const WriteArticle = (props) => {
             msg: response.data.message,
             alertDismiss: true,
           });
-        } else if (response.data.code === 201 || response.data.code === 401) {
+        } else if (response.data.code === 500 || response.data.code === 401) {
           window.scrollTo(0, inputEl);
           SubmitSetValue({
             isArticleSubmitted: true,
@@ -299,6 +294,13 @@ const WriteArticle = (props) => {
       })
       .catch((error) => {
         console.log(error.response);
+        window.scrollTo(0, inputEl);
+        SubmitSetValue({
+          isArticleSubmitted: true,
+          isError: true,
+          msg: error.response.data.message,
+          alertDismiss: true,
+        });
       });
   };
 

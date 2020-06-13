@@ -25,17 +25,19 @@ class Comments extends React.PureComponent {
   }
 
   getUserData = (pageNumber = 1) => {
-    axios
-      .get(`/article?page=${pageNumber}`)
-      .then((response) => {
+    axios.get(`/article?page=${pageNumber}`).then((response) => {
+      if (response.data.code === 200) {
         this.setState({
-          articles: [...response.data.articles.data],
-          activePage: response.data.articles.current_page,
-          itemsCountPerPage: response.data.articles.per_page,
-          totalItemsCount: response.data.articles.total,
+          articles: [...response.data.info.articles.data],
+          activePage: response.data.info.articles.current_page,
+          itemsCountPerPage: response.data.info.articles.per_page,
+          totalItemsCount: response.data.info.articles.total,
           isrender: true,
         });
-      });
+      } else {
+        window.alert(response.data.message);
+      }
+    });
   };
 
   handleClose = () => {
@@ -64,9 +66,11 @@ class Comments extends React.PureComponent {
         headers: { Authorization: `${localStorage.getItem("api_token")}` },
       })
       .then((response) => {
-        if (response.data.code === 401 || response.data.code === 201) {
+        if (response.data.code === 401) {
           localStorage.clear();
           this.props.history.push("/login");
+        } else if (response.data.code === 500) {
+          window.alert(response.data.message);
         } else {
           this.setState({
             modalFlag: false,
@@ -77,12 +81,6 @@ class Comments extends React.PureComponent {
       .catch((error) => {
         console.log(error.response);
       });
-  };
-
-  paginate = (pageNumber) => {
-    this.setState({
-      currentPage: pageNumber,
-    });
   };
 
   render() {
@@ -98,6 +96,7 @@ class Comments extends React.PureComponent {
     if (!this.state.isrender) {
       return <div className="loader">Loading...</div>;
     }
+
 
     let commentCount = 0;
     const comments = this.state.articles.map((article) => {
