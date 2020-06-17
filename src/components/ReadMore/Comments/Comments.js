@@ -9,7 +9,10 @@ const Comments = (props) => {
     <div>
       <Container>
         <div className={classes.dialogbox} style={{ display: "inline-block" }}>
-          <div className={classes.body} style={{ width: "100vw" }}>
+          <div
+            className={classes.body}
+            style={{ width: "auto", maxWidth: "300px", minWidth: "10rem" }}
+          >
             <strong>{props.newUser}</strong>
             <span className={style.join(" ")}></span>
             <div className={classes.message}>

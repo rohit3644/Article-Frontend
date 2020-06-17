@@ -26,6 +26,7 @@ class AdminDashboard extends React.PureComponent {
 
   getUserData = (pageNumber = 1) => {
     axios.get(`/article?page=${pageNumber}`).then((response) => {
+      console.log(response.data);
       if (response.data.code === 200) {
         this.setState({
           articles: [...response.data.info.articles.data],

@@ -13,6 +13,7 @@ class Register extends React.Component {
       password: "",
       name: "",
       mobile: "",
+      otp: "",
       isRegistered: false,
       emailError: false,
       passwordError: false,
@@ -22,6 +23,9 @@ class Register extends React.Component {
       mobileError: false,
       backendError: "",
       alertDismiss: true,
+      otpVerified: false,
+      showVerify: false,
+      otpWrong: false,
     };
   }
 
@@ -36,7 +40,7 @@ class Register extends React.Component {
     }
     // Create an array and push all possible values that you want in password
     let matchedCase = [];
-    matchedCase.push("[$@$!%*#?&]"); // Special Charector
+    matchedCase.push("[$@$!%*#?&]"); // Special Character
     matchedCase.push("[A-Z]"); // Uppercase Alpabates
     matchedCase.push("[0-9]"); // Numbers
     matchedCase.push("[a-z]"); // Lowercase Alphabates
@@ -114,6 +118,66 @@ class Register extends React.Component {
     }
   };
 
+  otpHandler = () => {
+    if (this.state.mobileError || this.state.mobile.length !== 10) {
+      return;
+    }
+    const data = {
+      mobile: this.state.mobile,
+    };
+    axios
+      .post("/otp-send", data)
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.code === 200) {
+          this.setState({
+            showVerify: true,
+          });
+        } else {
+          this.setState({ backendError: response.data.message });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        this.setState({ backendError: error.response.data.message });
+      });
+  };
+
+  otpVerifyHandler = () => {
+    if (
+      this.state.mobileError ||
+      this.state.mobile.length !== 10 ||
+      this.state.otp.length === 0
+    ) {
+      return;
+    }
+
+    const data = {
+      mobile: this.state.mobile,
+      otp: this.state.otp,
+    };
+    axios
+      .post("/otp-verify", data)
+      .then((response) => {
+        console.log(response.data);
+        if (response.data.code === 200) {
+          this.setState({
+            otpVerified: true,
+            otpWrong: false,
+          });
+        } else {
+          this.setState({
+            otpVerified: true,
+            otpWrong: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        this.setState({ backendError: error.response.data.message });
+      });
+  };
+
   onSubmitHandler = (event) => {
     event.preventDefault();
 
@@ -122,7 +186,8 @@ class Register extends React.Component {
       this.state.passwordError ||
       this.state.nameError ||
       this.state.mobileError ||
-      this.state.passwordLength < 8
+      this.state.passwordLength < 8 ||
+      !this.state.otpVerified
     ) {
       return;
     }
@@ -135,8 +200,6 @@ class Register extends React.Component {
       .then((response) => {
         if (response.data.code === 200) {
           this.setState({ isRegistered: true });
-        } else if (response.data === 500) {
-          this.setState({ backendError: response.data.message });
         } else {
           this.setState({ backendError: response.data.message });
         }
@@ -291,6 +354,54 @@ class Register extends React.Component {
                     </Form.Text>
                   ) : null}
                 </Form.Group>
+                <Button variant="primary" onClick={this.otpHandler}>
+                  Send OTP
+                </Button>
+                <br />
+                {this.state.showVerify ? (
+                  <div style={{ color: "green" }}>
+                    An OTP is sent to your number
+                  </div>
+                ) : null}
+                <br />
+                {this.state.showVerify ? (
+                  <React.Fragment>
+                    <Form.Group controlId="formBasicVerifyOtp">
+                      <Form.Label>Verify OTP</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter OTP"
+                        name="otp"
+                        onChange={this.onChangeHandler}
+                      />
+                      <Form.Text>
+                        {this.state.otpVerified ? (
+                          !this.state.otpWrong ? (
+                            <React.Fragment>
+                              Verified
+                              <i
+                                className="fa fa-check-circle"
+                                style={{ color: "green" }}
+                              ></i>
+                            </React.Fragment>
+                          ) : (
+                            <React.Fragment>
+                              Wrong OTP
+                              <i
+                                className="fa fa-close"
+                                style={{ color: "red" }}
+                              ></i>
+                            </React.Fragment>
+                          )
+                        ) : null}
+                      </Form.Text>
+                    </Form.Group>
+                    <Button variant="primary" onClick={this.otpVerifyHandler}>
+                      Verify
+                    </Button>
+                  </React.Fragment>
+                ) : null}
+                <hr />
                 <Button
                   variant="primary"
                   type="submit"

@@ -33,6 +33,7 @@ class ReadMore extends React.Component {
       } else if (response.data.code === 500) {
         window.alert(response.data.message);
       } else {
+        console.log(response.data);
         let category = [];
         response.data.info.category.map((ele) => {
           return category.push(ele.category);

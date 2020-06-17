@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { withRouter } from "react-router-dom";
 import {
   Container,
   Button,
@@ -12,6 +13,8 @@ import Category from "./Category/Categories";
 import axios from "axios";
 import CKEditor from "react-ckeditor-component";
 import parse from "html-react-parser";
+import modal from "./Modal/OTPSendModal";
+import otpVerifyModal from "./Modal/OTPVerifyModal";
 
 const WriteArticle = (props) => {
   const inputEl = useRef(null);
@@ -29,7 +32,7 @@ const WriteArticle = (props) => {
         .then((response) => {
           if (response.data.code === 401) {
             localStorage.clear();
-            this.props.history.push("/login");
+            props.history.push("/login");
           } else if (response.data.code === 500) {
             window.alert(response.data.message);
           } else {
@@ -67,6 +70,21 @@ const WriteArticle = (props) => {
     selectedCategory: [],
     title: "",
     author_name: "",
+  });
+  const [modalValue, modalSetValue] = useState({
+    modalFlag: false,
+  });
+  const [mobileValue, mobileSetValue] = useState({
+    mobile: "",
+  });
+  const [VerifyValue, VerifySetValue] = useState({
+    Verified: false,
+  });
+  const [otpVerifyValue, otpVerifySetValue] = useState({
+    otpFlag: false,
+  });
+  const [otpValue, otpSetValue] = useState({
+    otp: "",
   });
   const [fileValue, fileSetValue] = useState({
     fileLocation: "",
@@ -282,7 +300,7 @@ const WriteArticle = (props) => {
             msg: response.data.message,
             alertDismiss: true,
           });
-        } else if (response.data.code === 500 || response.data.code === 401) {
+        } else {
           window.scrollTo(0, inputEl);
           SubmitSetValue({
             isArticleSubmitted: true,
@@ -304,6 +322,129 @@ const WriteArticle = (props) => {
       });
   };
 
+  const handleClose = () => {
+    modalSetValue({
+      modalFlag: false,
+    });
+    otpVerifySetValue({
+      otpFlag: false,
+    });
+  };
+  const handleShow = () => {
+    modalSetValue({
+      modalFlag: true,
+    });
+  };
+
+  const otpVerifyHandler = () => {
+    if (otpValue.otp.length === 0) {
+      handleClose();
+      window.scrollTo(0, inputEl);
+      SubmitSetValue({
+        isArticleSubmitted: true,
+        isError: true,
+        msg: "Invalid mobile number",
+        alertDismiss: true,
+      });
+      return;
+    }
+    const data = {
+      mobile: mobileValue.mobile,
+      otp: otpValue.otp,
+    };
+    axios
+      .post("/otp-verify", data)
+      .then((response) => {
+        if (response.data.code === 200) {
+          VerifySetValue({
+            Verified: true,
+          });
+          handleClose();
+        } else {
+          handleClose();
+          window.scrollTo(0, inputEl);
+          SubmitSetValue({
+            isArticleSubmitted: true,
+            isError: true,
+            msg: response.data.message,
+            alertDismiss: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        handleClose();
+        window.scrollTo(0, inputEl);
+        SubmitSetValue({
+          isArticleSubmitted: true,
+          isError: true,
+          msg: error.response.data.message,
+          alertDismiss: true,
+        });
+      });
+  };
+
+  const otpSendHandler = () => {
+    if (
+      !mobileValue.mobile.match(
+        /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+      ) ||
+      mobileValue.mobile.length !== 10
+    ) {
+      handleClose();
+      window.scrollTo(0, inputEl);
+      SubmitSetValue({
+        isArticleSubmitted: true,
+        isError: true,
+        msg: "Invalid mobile number",
+        alertDismiss: true,
+      });
+      return;
+    }
+    const data = {
+      mobile: mobileValue.mobile,
+    };
+    axios
+      .post("/otp-send", data)
+      .then((response) => {
+        if (response.data.code === 200) {
+          otpVerifySetValue({
+            otpFlag: true,
+          });
+        } else {
+          handleClose();
+          window.scrollTo(0, inputEl);
+          SubmitSetValue({
+            isArticleSubmitted: true,
+            isError: true,
+            msg: response.data.message,
+            alertDismiss: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        handleClose();
+        window.scrollTo(0, inputEl);
+        SubmitSetValue({
+          isArticleSubmitted: true,
+          isError: true,
+          msg: error.response.data.message,
+          alertDismiss: true,
+        });
+      });
+  };
+  const mobileOnChange = (event) => {
+    mobileSetValue({
+      mobile: event.target.value,
+    });
+  };
+  const otpOnChange = (event) => {
+    otpSetValue({
+      otp: event.target.value,
+    });
+  };
+
   const onChange = (evt) => {
     var newContent = evt.editor.getData();
     richTextEditorSetValue({
@@ -315,8 +456,25 @@ const WriteArticle = (props) => {
     return <Category skill={tag} key={id} clicked={categoryDeleteHandler} />;
   });
 
+  const modalComponent = otpVerifyValue.otpFlag
+    ? otpVerifyModal(
+        modalValue.modalFlag,
+        handleClose,
+        otpVerifyHandler,
+        otpOnChange,
+        otpValue.otp
+      )
+    : modal(
+        modalValue.modalFlag,
+        handleClose,
+        otpSendHandler,
+        mobileOnChange,
+        mobileValue.mobile
+      );
+
   return (
     <div>
+      {modalComponent}
       {SubmitValue.isArticleSubmitted && SubmitValue.alertDismiss ? (
         SubmitValue.isError ? (
           <Alert
@@ -422,7 +580,14 @@ const WriteArticle = (props) => {
               />
             ) : null}
           </Form.Group>
-          <Button variant="primary" type="submit" onClick={onSubmitHandler}>
+          <Button
+            variant="primary"
+            onClick={
+              VerifyValue.Verified || localStorage.getItem("api_token") !== null
+                ? onSubmitHandler
+                : handleShow
+            }
+          >
             Submit
           </Button>
           <hr />
@@ -436,4 +601,4 @@ const WriteArticle = (props) => {
   );
 };
 
-export default React.memo(WriteArticle);
+export default React.memo(withRouter(WriteArticle));

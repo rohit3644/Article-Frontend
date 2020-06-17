@@ -30,6 +30,7 @@ class Header extends React.Component {
       boxShadow: "1px 1px 1px 1px grey",
       borderRadius: "10px",
       display: display,
+      maxWidth: "10rem",
     };
 
     return (
