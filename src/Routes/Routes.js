@@ -10,6 +10,7 @@ import Register from "../components/Register/Register";
 import About from "../components/About/About";
 import Contact from "../components/Contact/Contact";
 import ReadMore from "../components/ReadMore/ReadMore";
+import Stripe from "../components/Stripe-Payment/Stripe";
 
 const routeList = (data) => {
   const routes = [
@@ -29,6 +30,10 @@ const routeList = (data) => {
     {
       path: "/write-article",
       component: <WriteArticle />,
+    },
+    {
+      path: "/payment",
+      component: <Stripe />,
     },
     {
       path: "/article-list",

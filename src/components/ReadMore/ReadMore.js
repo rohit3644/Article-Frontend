@@ -4,6 +4,8 @@ import classes from "./ReadMore.module.css";
 import axios from "axios";
 import Comments from "./Comments/Comments";
 import parse from "html-react-parser";
+import otpSend from "../WriteArticle/Modal/OTPSendModal";
+import otpVerify from "../WriteArticle/Modal/OTPVerifyModal";
 
 class ReadMore extends React.Component {
   constructor(props) {
@@ -20,6 +22,11 @@ class ReadMore extends React.Component {
       commentSuccess: false,
       commentsArray: [],
       newCommentUser: "",
+      otpVerified: false,
+      modalFlag: false,
+      otpFlag: false,
+      otp: "",
+      mobile: "",
     };
   }
 
@@ -132,6 +139,118 @@ class ReadMore extends React.Component {
     });
   };
 
+  handleClose = () => {
+    this.setState({
+      modalFlag: false,
+    });
+    this.setState({
+      otpFlag: false,
+    });
+  };
+  handleShow = () => {
+    this.setState({
+      modalFlag: true,
+    });
+  };
+
+  otpVerifyHandler = () => {
+    if (this.state.otp.length === 0) {
+      this.handleClose();
+      this.setState({
+        commentMsg: "Enter the OTP",
+        commentSuccess: false,
+        commentUpdate: true,
+      });
+      return;
+    }
+    const data = {
+      mobile: this.state.mobile,
+      otp: this.state.otp,
+    };
+    axios
+      .post("/otp-verify", data)
+      .then((response) => {
+        if (response.data.code === 200) {
+          this.setState({
+            otpVerified: true,
+          });
+          this.handleClose();
+        } else {
+          this.handleClose();
+          this.setState({
+            commentMsg: response.data.message,
+            commentSuccess: false,
+            commentUpdate: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        this.handleClose();
+        this.setState({
+          commentMsg: error.response.data.message,
+          commentSuccess: false,
+          commentUpdate: true,
+        });
+      });
+  };
+
+  otpSendHandler = () => {
+    if (
+      !this.state.mobile.match(
+        /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/
+      ) ||
+      this.state.mobile.length !== 10
+    ) {
+      this.handleClose();
+      this.setState({
+        commentMsg: "Invalid mobile number",
+        commentSuccess: false,
+        commentUpdate: true,
+      });
+      return;
+    }
+    const data = {
+      mobile: this.state.mobile,
+    };
+    axios
+      .post("/otp-send", data)
+      .then((response) => {
+        if (response.data.code === 200) {
+          this.setState({
+            otpFlag: true,
+          });
+        } else {
+          this.handleClose();
+          this.setState({
+            commentMsg: response.data.message,
+            commentSuccess: false,
+            commentUpdate: true,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.response);
+        this.handleClose();
+        this.setState({
+          commentMsg: error.response.data.message,
+          commentSuccess: false,
+          commentUpdate: true,
+        });
+      });
+  };
+
+  mobileOnChange = (event) => {
+    this.setState({
+      mobile: event.target.value,
+    });
+  };
+  otpOnChange = (event) => {
+    this.setState({
+      otp: event.target.value,
+    });
+  };
+
   render() {
     if (!this.state.isrender) {
       return <div className="loader">Loading...</div>;
@@ -158,8 +277,25 @@ class ReadMore extends React.Component {
           : "Be the first one to comment";
     }
 
+    const modalComponent = this.state.otpFlag
+      ? otpVerify(
+          this.state.modalFlag,
+          this.handleClose,
+          this.otpVerifyHandler,
+          this.otpOnChange,
+          this.state.otp
+        )
+      : otpSend(
+          this.state.modalFlag,
+          this.handleClose,
+          this.otpSendHandler,
+          this.mobileOnChange,
+          this.state.mobile
+        );
+
     return (
       <div>
+        {modalComponent}
         {Object.keys(this.state.article).length > 0 ? (
           <Container className={classes.ReadMore}>
             <img
@@ -208,7 +344,15 @@ class ReadMore extends React.Component {
                   )
                 ) : null}
                 <hr />
-                <Button variant="primary" onClick={this.commentSubmitHandler}>
+                <Button
+                  variant="primary"
+                  onClick={
+                    this.state.otpVerified ||
+                    localStorage.getItem("api_token") !== null
+                      ? this.commentSubmitHandler
+                      : this.handleShow
+                  }
+                >
                   Add Comments
                 </Button>
               </React.Fragment>
