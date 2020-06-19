@@ -9,11 +9,15 @@ class FormComponent extends React.Component {
     super(props);
     this.state = {
       name: "",
-      amount: "",
       responseMsg: "",
       error: false,
       submitted: false,
+      line: "",
+      city: "",
+      state: "",
+      country: "",
     };
+    this.myRef = React.createRef();
   }
 
   onChangeHandler = (event) => {
@@ -32,18 +36,22 @@ class FormComponent extends React.Component {
           console.log(response.token);
           let data = {
             tokenId: response.token.id,
+            postalCode: response.token.card.address_zip,
+            ...this.state,
           };
           axios
             .post("/payment", data)
             .then((response) => {
               console.log(response.data);
               if (response.data.code === 200) {
+                window.scrollTo(0, this.myRef);
                 this.setState({
-                  responseMsg: response.data.message,
+                  responseMsg: "Congrats! You are now a member",
                   submitted: true,
                   error: false,
                 });
               } else {
+                window.scrollTo(0, this.myRef);
                 this.setState({
                   responseMsg: response.data.message,
                   error: true,
@@ -52,6 +60,7 @@ class FormComponent extends React.Component {
               }
             })
             .catch((error) => {
+              window.scrollTo(0, this.myRef);
               console.log(error.response);
               this.setState({
                 responseMsg: error.response.data.message,
@@ -59,6 +68,15 @@ class FormComponent extends React.Component {
                 submitted: true,
               });
             });
+        })
+        .catch((error) => {
+          window.scrollTo(0, this.myRef);
+          console.log(error.response);
+          this.setState({
+            responseMsg: "Invalid request",
+            error: true,
+            submitted: true,
+          });
         });
     } catch (e) {
       throw e;
@@ -71,12 +89,24 @@ class FormComponent extends React.Component {
         {/* if the form is submitted  */}
         {this.state.submitted ? (
           this.state.error ? (
-            <div className={classes.error}>{this.state.responseMsg}</div>
+            <div className={classes.error} ref={this.myRef}>
+              {this.state.responseMsg}
+            </div>
           ) : (
-            <div className={classes.success}>{this.state.responseMsg}</div>
+            <div className={classes.success} ref={this.myRef}>
+              {this.state.responseMsg}
+            </div>
           )
         ) : null}
         <Container className={classes.Form}>
+          <h2>Monthly Membership</h2>
+          <hr />
+          <strong>What our members get?</strong>
+          <ul>
+            <li>Access to the our daily NewsLetter</li>
+            <li>Exclusive discount in offline article download</li>
+            <li>24*7 instant support from our team</li>
+          </ul>
           <Form>
             <Form.Group controlId="formBasicName">
               <Form.Label>Name</Form.Label>
@@ -89,12 +119,34 @@ class FormComponent extends React.Component {
             </Form.Group>
 
             <Form.Group controlId="formBasicAmount">
-              <Form.Label>Amount ($)</Form.Label>
+              <Form.Label>Address</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter Amount"
-                name="amount"
+                placeholder="Line 1"
+                name="line"
                 onChange={this.onChangeHandler}
+                style={{ marginBottom: "15px" }}
+              />
+              <Form.Control
+                type="text"
+                placeholder="City"
+                name="city"
+                onChange={this.onChangeHandler}
+                style={{ marginBottom: "15px" }}
+              />
+              <Form.Control
+                type="text"
+                placeholder="State"
+                name="state"
+                onChange={this.onChangeHandler}
+                style={{ marginBottom: "15px" }}
+              />
+              <Form.Control
+                type="text"
+                placeholder="Country"
+                name="country"
+                onChange={this.onChangeHandler}
+                style={{ marginBottom: "15px" }}
               />
             </Form.Group>
 
@@ -102,8 +154,12 @@ class FormComponent extends React.Component {
               <Form.Label>Card Details</Form.Label>
               <CardElement className={classes.Card} />
             </Form.Group>
-            <Button variant="success" onClick={this.submitHandler}>
-              Pay
+            <Button
+              variant="success"
+              onClick={this.submitHandler}
+              className={classes.Button}
+            >
+              <strong>Pay $6</strong>
             </Button>
           </Form>
         </Container>

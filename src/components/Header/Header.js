@@ -95,6 +95,9 @@ class Header extends React.Component {
                   <Button className={classes.Header} href="/write-article">
                     Write Article
                   </Button>
+                  <Button className={classes.Header} href="/payment">
+                    Membership
+                  </Button>
                 </Nav>
               </Col>
             )}
