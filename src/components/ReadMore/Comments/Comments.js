@@ -2,6 +2,8 @@ import React from "react";
 import classes from "./Comments.module.css";
 import { Container } from "react-bootstrap";
 
+// this class is used to display commments
+
 const Comments = (props) => {
   const style = [classes.tip];
   style.push(classes.tipLeft);

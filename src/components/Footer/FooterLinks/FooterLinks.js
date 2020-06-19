@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import classes from "./FooterLinks.module.css";
-
+// this component contains all links in the footer
 const FooterLinks = (props) => {
   return (
     <div className={classes.FooterLinks}>

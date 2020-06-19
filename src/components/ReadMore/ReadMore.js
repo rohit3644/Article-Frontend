@@ -7,6 +7,9 @@ import parse from "html-react-parser";
 import otpSend from "../WriteArticle/Modal/OTPSendModal";
 import otpVerify from "../WriteArticle/Modal/OTPVerifyModal";
 
+// this class is used for displaying the details of the articles,
+// and comments with add comment functionality
+
 class ReadMore extends React.Component {
   constructor(props) {
     super(props);
@@ -30,6 +33,7 @@ class ReadMore extends React.Component {
     };
   }
 
+  // get the data from backend based on the article name generated from article slug
   componentDidMount() {
     const data = {
       article: this.props.article,
@@ -57,12 +61,14 @@ class ReadMore extends React.Component {
     });
   }
 
+  // open add comment option
   commentHandler = () => {
     this.setState({
       addComment: true,
     });
   };
 
+  // on comment submit
   commentSubmitHandler = (event) => {
     event.preventDefault();
     if (this.state.comment.length === 0) {
@@ -81,6 +87,7 @@ class ReadMore extends React.Component {
       is_approved = "Yes";
       user_id = parseInt(localStorage.getItem("api_token").slice(65));
     }
+    // preparing data for backend
     const data = {
       comment: this.state.comment,
       articleId: this.state.article.id,
@@ -133,12 +140,14 @@ class ReadMore extends React.Component {
       });
   };
 
+  // comment input on change
   commentInputHandler = (event) => {
     this.setState({
       comment: event.target.value,
     });
   };
 
+  // modal close
   handleClose = () => {
     this.setState({
       modalFlag: false,
@@ -147,12 +156,14 @@ class ReadMore extends React.Component {
       otpFlag: false,
     });
   };
+  // modal open
   handleShow = () => {
     this.setState({
       modalFlag: true,
     });
   };
 
+  // otp verification before comment submission
   otpVerifyHandler = () => {
     if (this.state.otp.length === 0) {
       this.handleClose();
@@ -195,6 +206,7 @@ class ReadMore extends React.Component {
       });
   };
 
+  // send otp before comment submission
   otpSendHandler = () => {
     if (
       !this.state.mobile.match(
@@ -258,6 +270,7 @@ class ReadMore extends React.Component {
 
     let comments = null;
 
+    // getting comments from articles
     if (Object.keys(this.state.article).length > 0) {
       let filteredCommentArray = this.state.commentsArray.filter((comment) => {
         return comment.is_approved === "Yes";
@@ -277,6 +290,7 @@ class ReadMore extends React.Component {
           : "Be the first one to comment";
     }
 
+    // conditional modal
     const modalComponent = this.state.otpFlag
       ? otpVerify(
           this.state.modalFlag,
@@ -363,6 +377,7 @@ class ReadMore extends React.Component {
             )}
           </Container>
         ) : (
+          // Error 404 Page not found
           <div style={{ color: "gray", textAlign: "center" }}>
             <h1>Error 404: Page Not Found</h1>
             <svg

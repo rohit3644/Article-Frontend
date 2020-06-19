@@ -6,6 +6,9 @@ import { Modal, Button } from "react-bootstrap";
 import Pagination from "react-js-pagination";
 import axios from "axios";
 
+// this class is used to display all the user articles
+// and also provides the functionality to edit, delete and read the article
+
 class UserDashboard extends React.Component {
   constructor(props) {
     super(props);
@@ -20,7 +23,9 @@ class UserDashboard extends React.Component {
     };
   }
 
+  // get the data from backend
   componentDidMount() {
+    // restricting access
     if (localStorage.getItem("api_token") === null) {
       return <Redirect to="/login" />;
     } else if (
@@ -32,6 +37,7 @@ class UserDashboard extends React.Component {
     this.getUserData();
   }
 
+  // paginated data
   getUserData = (pageNumber = 1) => {
     // let token = localStorage.getItem("api_token");
     let data = {
@@ -66,18 +72,20 @@ class UserDashboard extends React.Component {
       });
   };
 
+  // modal close
   handleClose = () => {
     this.setState({
       modalFlag: false,
     });
   };
+  // modal show
   handleShow = (articleId) => {
     this.setState({
       modalFlag: true,
       articleId: articleId,
     });
   };
-
+  // delete article function
   deleteArticleHandler = (event) => {
     event.preventDefault();
     const data = {
@@ -106,10 +114,12 @@ class UserDashboard extends React.Component {
   };
 
   render() {
+    // css loader
     if (!this.state.isrender) {
       return <div className="loader">Loading...</div>;
     }
 
+    // filtering the user articles
     const articles = this.state.userArticles.map((article) => {
       if (
         article.user_id ===
@@ -119,10 +129,13 @@ class UserDashboard extends React.Component {
       }
       return null;
     });
+
+    // removing null values
     const filteredArticle = articles.filter((el) => {
       return el != null;
     });
 
+    // getting comments count of approved articles
     const userArticles = filteredArticle.map((article, id) => {
       let commentCount = 0;
       article.comments.map((comments) => {

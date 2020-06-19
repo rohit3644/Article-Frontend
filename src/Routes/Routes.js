@@ -12,6 +12,8 @@ import Contact from "../components/Contact/Contact";
 import ReadMore from "../components/ReadMore/ReadMore";
 import Stripe from "../components/Stripe-Payment/Stripe";
 
+// this component contains all the routes
+
 const routeList = (data) => {
   const routes = [
     {

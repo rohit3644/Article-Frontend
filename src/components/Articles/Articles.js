@@ -87,6 +87,7 @@ class Articles extends React.Component {
             <div className={classes.Articles}>{articles}</div>
             <br />
             <div className={classes.Pagination}>
+              {/* Pagination  */}
               <Pagination
                 activePage={this.props.activePage}
                 itemsCountPerPage={this.props.itemsCountPerPage}

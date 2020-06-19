@@ -13,18 +13,23 @@ import { withRouter } from "react-router-dom";
 import Logo from "../../assets/logo192.png";
 import classes from "./Header.module.css";
 
+
+// this class displays the conditionals options in the header
 class Header extends React.Component {
+  // logout 
   logOutHandler = () => {
     localStorage.clear();
     this.props.history.push("/login");
   };
 
+  // edit
   editHandler = () => {
     localStorage.setItem("update", -1);
     this.props.history.push("/write-article");
   };
 
   render() {
+    // stylings
     const display = this.props.display;
     const style = {
       boxShadow: "1px 1px 1px 1px grey",
@@ -55,6 +60,7 @@ class Header extends React.Component {
                 <div className={classes.LogoName}> @rticle.io </div>
               </Navbar.Brand>
             </Col>
+            {/* conditionally rendering the header options */}
             {localStorage.getItem("api_token") !== null ? (
               localStorage.getItem("api_token").slice(0, 5) === "14219" ? (
                 <Col>

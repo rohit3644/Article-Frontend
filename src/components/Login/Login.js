@@ -4,6 +4,8 @@ import classes from "./Login.module.css";
 import axios from "axios";
 import { withRouter, Redirect } from "react-router-dom";
 
+// this class is used for login functionality
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -19,19 +21,21 @@ class Login extends React.Component {
     };
   }
 
+  // validate email
   validateEmail = (email) => {
     // eslint-disable-next-line
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email) && email !== "";
   };
+  // validate password
   validatePassword = (password) => {
     return password.length < 8 || password === "" ? false : true;
   };
-
+  // on change
   onChangeHandler = (event) => {
     this.setState({ [event.target.name]: event.target.value });
   };
-
+  // on submit
   onSubmitHandler = (event) => {
     event.preventDefault();
 
@@ -48,11 +52,15 @@ class Login extends React.Component {
       .post("/login", data)
       .then((response) => {
         if (response.data.code === 200) {
+          // setting api token and username in localStorage
           localStorage.setItem("api_token", response.data.info.api_key);
           localStorage.setItem("username", response.data.info.user.name);
+          // redirect to admin dashboard
           if (response.data.info.user.is_admin === "Yes") {
             this.props.history.push("/admin-dashboard");
-          } else {
+          }
+          // redirect to user dashboard
+          else {
             this.props.history.push("/user-dashboard");
           }
         } else {
@@ -66,6 +74,7 @@ class Login extends React.Component {
       })
       .catch((error) => {
         console.log(error.response);
+        // scroll to the message
         window.scrollTo(0, this.errorRef);
         this.setState({
           error: true,
@@ -75,6 +84,7 @@ class Login extends React.Component {
       });
   };
 
+  // on blur validations
   onBlurValidationHandler = (event) => {
     if (event.target.name === "email") {
       const isEmailValid = this.validateEmail(this.state.email);
@@ -94,6 +104,7 @@ class Login extends React.Component {
   };
 
   render() {
+    // restricting access
     if (
       localStorage.getItem("api_token") !== null &&
       localStorage.getItem("api_token").slice(0, 5) === "78357"

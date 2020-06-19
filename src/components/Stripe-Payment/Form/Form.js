@@ -4,6 +4,8 @@ import { Container, Form, Button } from "react-bootstrap";
 import classes from "./Form.module.css";
 import axios from "axios";
 
+// Stripe payment form and from handler
+
 class FormComponent extends React.Component {
   constructor(props) {
     super(props);

@@ -6,6 +6,10 @@ import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import Pagination from "react-js-pagination";
 
+// this class is used to display all the articles on the admin
+// screen and also implements the features to approve, delete and
+// edit articles
+
 class AdminDashboard extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -20,10 +24,12 @@ class AdminDashboard extends React.PureComponent {
     };
   }
 
+  // get all the data from backend
   componentDidMount() {
     this.getUserData();
   }
 
+  // pagination from the backend
   getUserData = (pageNumber = 1) => {
     axios.get(`/article?page=${pageNumber}`).then((response) => {
       console.log(response.data);
@@ -55,6 +61,7 @@ class AdminDashboard extends React.PureComponent {
     });
   };
 
+  // when delete button in clicked
   deleteArticleHandler = (event) => {
     event.preventDefault();
     const data = {
@@ -116,6 +123,7 @@ class AdminDashboard extends React.PureComponent {
     });
     return (
       <div>
+        {/* modal component  */}
         <>
           <Modal show={this.state.modalFlag} onHide={this.handleClose}>
             <Modal.Header closeButton>
@@ -141,6 +149,7 @@ class AdminDashboard extends React.PureComponent {
             <div className={classes.Article}>{articles}</div>
             <br />
             <div className={classes.Pagination}>
+              {/* pagination  */}
               <Pagination
                 activePage={this.state.activePage}
                 itemsCountPerPage={this.state.itemsCountPerPage}

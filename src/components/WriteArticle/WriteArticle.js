@@ -16,9 +16,12 @@ import parse from "html-react-parser";
 import modal from "./Modal/OTPSendModal";
 import otpVerifyModal from "./Modal/OTPVerifyModal";
 
-const WriteArticle = (props) => {
-  const inputEl = useRef(null);
+// this class is used for adding article and also updating the article
 
+const WriteArticle = (props) => {
+  // ref to scroll to message
+  const inputEl = useRef(null);
+  // prefetch and populate article when update article option is clicked
   useEffect(() => {
     if (parseInt(localStorage.getItem("update")) === 1) {
       localStorage.setItem("update", 0);
@@ -103,6 +106,7 @@ const WriteArticle = (props) => {
     msg: "",
     alertDismiss: true,
   });
+  // all the categories
   const categories = [
     "Entertainment",
     "Family Life",
@@ -123,6 +127,7 @@ const WriteArticle = (props) => {
     "Personal Care and Style",
     "Sports and Fitness",
   ];
+  // dropdown handler
   const dropdownClickHandler = (event) => {
     let arr = [...value.selectedCategory, event];
     arr = [...new Set(arr)];
@@ -140,6 +145,7 @@ const WriteArticle = (props) => {
     );
   });
 
+  // image handler
   const handleChange = (event) => {
     fileSetValue({
       file: event.target.files[0],
@@ -149,6 +155,7 @@ const WriteArticle = (props) => {
     });
   };
 
+  // title change handler
   const titleChangeHandler = (event) => {
     event.persist();
     setValue((prevState) => {
@@ -182,6 +189,7 @@ const WriteArticle = (props) => {
     });
   };
 
+  // frontend validations
   const validations = (value, richTextEditorValue, fileValue = null) => {
     let error = "";
     if (value.selectedCategory.length === 0) {
@@ -217,6 +225,7 @@ const WriteArticle = (props) => {
     return error;
   };
 
+  // on submit handler
   const onSubmitHandler = (event) => {
     event.preventDefault();
     let error = "";
@@ -542,6 +551,7 @@ const WriteArticle = (props) => {
 
           <Form.Group controlId="formBasicContent">
             <Form.Label>Content</Form.Label>
+            {/* CKEditor  */}
             <CKEditor
               activeClass="p10"
               content={richTextEditorValue.text}

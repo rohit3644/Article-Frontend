@@ -3,6 +3,10 @@ import { Container, Button, Form } from "react-bootstrap";
 import classes from "./Contact.module.css";
 import axios from "axios";
 
+// this class is used to create contact us form and 
+// communicate with the backend
+
+
 class Contact extends React.Component {
   constructor(props) {
     super(props);
@@ -16,12 +20,14 @@ class Contact extends React.Component {
     };
   }
 
+  // on change update the state elements
   changeHandler = (event) => {
     this.setState({
       [event.target.name]: event.target.value,
     });
   };
 
+  // on submit of contact us form
   submitHandler = (event) => {
     event.preventDefault();
 
@@ -34,6 +40,7 @@ class Contact extends React.Component {
           ? "Yes"
           : "No";
     }
+    // axios call
     axios
       .post("/contact", data)
       .then((response) => {
@@ -50,6 +57,7 @@ class Contact extends React.Component {
           });
         }
       })
+      // catch error
       .catch((error) => {
         console.log(error.response);
         this.setState({

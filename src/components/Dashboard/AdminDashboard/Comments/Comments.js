@@ -6,6 +6,8 @@ import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
 import Pagination from "react-js-pagination";
 
+// this class is used to display all the article comments
+// and approve, delete and edit the comments
 class Comments extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -20,10 +22,12 @@ class Comments extends React.PureComponent {
     };
   }
 
+  // get all the articles
   componentDidMount() {
     this.getUserData();
   }
 
+  // paginated data
   getUserData = (pageNumber = 1) => {
     axios.get(`/article?page=${pageNumber}`).then((response) => {
       if (response.data.code === 200) {
@@ -40,11 +44,13 @@ class Comments extends React.PureComponent {
     });
   };
 
+  // modal close
   handleClose = () => {
     this.setState({
       modalFlag: false,
     });
   };
+  // modal open
   handleShow = (commentId) => {
     this.setState({
       modalFlag: true,
@@ -52,6 +58,7 @@ class Comments extends React.PureComponent {
     });
   };
 
+  // delete comment handler
   deleteCommentHandler = (event) => {
     event.preventDefault();
     const data = {
@@ -84,6 +91,7 @@ class Comments extends React.PureComponent {
   };
 
   render() {
+    // restricting access
     if (localStorage.getItem("api_token") === null) {
       return <Redirect to="/login" />;
     } else if (
@@ -93,12 +101,13 @@ class Comments extends React.PureComponent {
       return <Redirect to="/user-dashboard" />;
     }
 
+    // css loader
     if (!this.state.isrender) {
       return <div className="loader">Loading...</div>;
     }
 
-
     let commentCount = 0;
+    // passing comment props to listing component
     const comments = this.state.articles.map((article) => {
       return article.comments.map((commentsArray, id) => {
         commentCount += 1;

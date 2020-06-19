@@ -5,6 +5,8 @@ import classeserror from "./RegisterError.module.css";
 import axios from "axios";
 import { Redirect } from "react-router-dom";
 
+// this class is used for user registration 
+
 class Register extends React.Component {
   constructor(props) {
     super(props);
@@ -71,6 +73,8 @@ class Register extends React.Component {
 
     return strength;
   };
+
+  
 
   phoneNumberValidation = (inputtxt) => {
     var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;

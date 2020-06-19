@@ -7,6 +7,8 @@ import { Container } from "react-bootstrap";
 import axios from "axios";
 import routeList from "../Routes/Routes";
 
+// this class is the used for router options and getting data from backend
+
 class App extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -21,6 +23,7 @@ class App extends React.PureComponent {
       totalItemsCount: 1,
     };
   }
+
 
   componentDidMount() {
     this.getUserData();
@@ -43,6 +46,7 @@ class App extends React.PureComponent {
     });
   };
 
+  // search by title handler
   searchValueHandler = (event) => {
     this.setState({
       searchValue: event.target.value,
@@ -69,6 +73,7 @@ class App extends React.PureComponent {
       readMore: readMore,
     };
 
+    // creating route links
     let routesLink = routeList(data).map((route, id) => {
       return (
         <Route key={id} exact path={route.path}>

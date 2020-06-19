@@ -3,6 +3,9 @@ import classes from "./Article.module.css";
 import { Card, Button, Col } from "react-bootstrap";
 import { withRouter } from "react-router-dom";
 
+// this class is used to create a card with article details,
+// like article name, author name, number of comments
+
 class Article extends React.Component {
   // when edit option is clicked
   editHandler = () => {

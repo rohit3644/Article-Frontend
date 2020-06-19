@@ -3,6 +3,9 @@ import classes from "./Listing.module.css";
 import { Card, Button, Form } from "react-bootstrap";
 import axios from "axios";
 import { withRouter } from "react-router-dom";
+
+// this class is used for all the functionalities like approve, delete, edit
+// comments and articles on the admin screen
 class Listing extends React.Component {
   constructor(props) {
     super(props);
@@ -12,6 +15,7 @@ class Listing extends React.Component {
     };
   }
 
+  // on submit of new comments edit comment
   submitHandler = (event) => {
     event.preventDefault();
     if (this.state.newComment.lenght <= 0) {
@@ -44,24 +48,28 @@ class Listing extends React.Component {
       });
   };
 
+  // on change handler
   changeHandler = (event) => {
     this.setState({
       newComment: event.target.value,
     });
   };
 
+  // display the edit option
   editCommentHandler = () => {
     this.setState({
       editComment: true,
     });
   };
 
+  // redirect to the write article page with all the data pre-fetched
   editArticleHandler = () => {
     localStorage.setItem("update", 1);
     localStorage.setItem("articleId", this.props.articleId);
     this.props.history.push("/write-article");
   };
 
+  // approve article
   approveArticleHandler = () => {
     const data = {
       id: this.props.articleId,
@@ -88,6 +96,8 @@ class Listing extends React.Component {
         console.log(error.response);
       });
   };
+
+  // approve comments
   approveCommentHandler = () => {
     const data = {
       id: this.props.commentId,
@@ -115,6 +125,7 @@ class Listing extends React.Component {
       });
   };
   render() {
+    // making a link from article name
     const readMoreLink =
       "/" + this.props.name.split(" ").join("-").toLowerCase();
 
