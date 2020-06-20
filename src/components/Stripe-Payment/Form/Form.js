@@ -32,6 +32,7 @@ class FormComponent extends React.Component {
     event.preventDefault();
     console.log("Payment done");
     try {
+      // create stripe token
       this.props.stripe
         .createToken({ name: this.state.name })
         .then((response) => {
@@ -106,7 +107,7 @@ class FormComponent extends React.Component {
           <strong>What our members get?</strong>
           <ul>
             <li>Access to the our daily NewsLetter</li>
-            <li>Exclusive discount in offline article download</li>
+            <li>Unlimited Access and No-Ads</li>
             <li>24*7 instant support from our team</li>
           </ul>
           <Form>

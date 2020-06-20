@@ -2,7 +2,7 @@
   "name": "article-frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://127.0.0.1:8000/api",
+  "proxy": "http://rohit.blog.com/api",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -14,6 +14,7 @@
     "react-bootstrap": "^1.0.1",
     "react-ckeditor-component": "^1.1.0",
     "react-dom": "^16.13.1",
+    "react-google-login": "^5.1.20",
     "react-js-pagination": "^3.0.3",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",

@@ -3,6 +3,8 @@ import { Container, Button, Form, Alert } from "react-bootstrap";
 import classes from "./Login.module.css";
 import axios from "axios";
 import { withRouter, Redirect } from "react-router-dom";
+import GoogleLogin from "react-google-login";
+import { googleId } from "../../env";
 
 // this class is used for login functionality
 
@@ -81,6 +83,21 @@ class Login extends React.Component {
           errorMsg: error.response.data.message,
           alertDismiss: true,
         });
+      });
+  };
+
+  responseGoogle = (response) => {
+    console.log(response.tokenObj.access_token);
+    let data = {
+      token: response.tokenObj.access_token,
+    };
+    axios
+      .post("/googleAuth", data)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error.response);
       });
   };
 
@@ -167,6 +184,14 @@ class Login extends React.Component {
             >
               Submit
             </Button>
+            <hr />
+            <GoogleLogin
+              clientId={googleId}
+              buttonText="Login"
+              onSuccess={this.responseGoogle}
+              onFailure={this.responseGoogle}
+              cookiePolicy={"single_host_origin"}
+            />
             <hr />
             <div className={classes.LoginStyle}>
               <a href="/register">Not a member yet? Create an account</a>
