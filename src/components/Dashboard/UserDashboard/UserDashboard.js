@@ -39,7 +39,6 @@ class UserDashboard extends React.Component {
 
   // paginated data
   getUserData = (pageNumber = 1) => {
-    // let token = localStorage.getItem("api_token");
     let data = {
       isAdmin:
         localStorage.getItem("api_token").slice(0, 5) === "78357"

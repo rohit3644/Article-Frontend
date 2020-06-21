@@ -95,10 +95,32 @@ class Login extends React.Component {
       .post("/googleAuth", data)
       .then((response) => {
         console.log(response.data);
+        if (response.data.code === 200) {
+          localStorage.setItem("api_token", response.data.info.api_key);
+          localStorage.setItem("username", response.data.info.user.name);
+          this.props.history.push("/user-dashboard");
+        } else {
+          window.scrollTo(0, this.errorRef);
+          this.setState({
+            error: true,
+            errorMsg: response.data.message,
+            alertDismiss: true,
+          });
+        }
       })
       .catch((error) => {
         console.log(error.response);
+        window.scrollTo(0, this.errorRef);
+        this.setState({
+          error: true,
+          errorMsg: error.response.data.message,
+          alertDismiss: true,
+        });
       });
+  };
+
+  failedResponseGoogle = (response) => {
+    console.log(response);
   };
 
   // on blur validations
@@ -189,8 +211,7 @@ class Login extends React.Component {
               clientId={googleId}
               buttonText="Login"
               onSuccess={this.responseGoogle}
-              onFailure={this.responseGoogle}
-              cookiePolicy={"single_host_origin"}
+              onFailure={this.failedResponseGoogle}
             />
             <hr />
             <div className={classes.LoginStyle}>

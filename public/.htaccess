@@ -1,0 +1,8 @@
+Options -MultiViews
+RewriteEngine On
+AddType text/css .css
+AddType text/javascript .js
+RewriteCond %{REQUEST_FILENAME} !-f [OR]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^.*\.(css|js|png|jpg|gif|txt)$ [NC]
+RewriteRule . index.html [NC,QSA,L]

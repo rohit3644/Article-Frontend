@@ -81,7 +81,6 @@ class App extends React.PureComponent {
         </Route>
       );
     });
-
     return (
       <div>
         <Header
