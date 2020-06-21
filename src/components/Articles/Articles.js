@@ -2,8 +2,7 @@ import React from "react";
 import Article from "./Article/Article";
 import classes from "./Articles.module.css";
 import { Redirect } from "react-router-dom";
-import Pagination from "react-js-pagination";
-
+import pagination from "../Pagination/Pagination";
 // this class is used to render all the approved articles
 //  Search by title functionality is also implemented here
 
@@ -78,6 +77,14 @@ class Articles extends React.Component {
     let filteredArticles = articles.filter((el) => {
       return el !== null;
     });
+
+    const data = {
+      activePage: this.props.activePage,
+      itemsCountPerPage: this.props.itemsCountPerPage,
+      totalItemsCount: this.props.totalItemsCount,
+      onChange: (pageNumber) => this.props.getUserData(pageNumber),
+    };
+    let paginationComponent = pagination(data);
     return (
       <div>
         <h3 className={classes.ArticleStyle}>Popular Articles</h3>
@@ -88,17 +95,7 @@ class Articles extends React.Component {
             <br />
             <div className={classes.Pagination}>
               {/* Pagination  */}
-              <Pagination
-                activePage={this.props.activePage}
-                itemsCountPerPage={this.props.itemsCountPerPage}
-                totalItemsCount={this.props.totalItemsCount}
-                pageRangeDisplayed={2}
-                onChange={(pageNumber) => this.props.getUserData(pageNumber)}
-                itemClass="page-item"
-                linkClass="page-link"
-                firstPageText="First"
-                lastPageText="Last"
-              />
+              {paginationComponent}
             </div>
           </React.Fragment>
         ) : (

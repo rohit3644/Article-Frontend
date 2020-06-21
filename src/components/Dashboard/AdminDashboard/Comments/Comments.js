@@ -2,9 +2,9 @@ import React from "react";
 import { withRouter, Redirect } from "react-router-dom";
 import Listing from "../Listing/Listing";
 import classes from "./Comments.module.css";
-import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
-import Pagination from "react-js-pagination";
+import pagination from "../../../Pagination/Pagination";
+import modal from "../../../Modal/Modal";
 
 // this class is used to display all the article comments
 // and approve, delete and edit the comments
@@ -126,45 +126,31 @@ class Comments extends React.PureComponent {
     });
     console.log(commentCount);
 
+    const data = {
+      activePage: this.state.activePage,
+      itemsCountPerPage: this.state.itemsCountPerPage,
+      totalItemsCount: this.state.totalItemsCount,
+      onChange: (pageNumber) => this.getUserData(pageNumber),
+    };
+    let paginationComponent = pagination(data);
+
+    const modalData = {
+      modalFlag: this.state.modalFlag,
+      handleClose: this.handleClose,
+      delete: this.deleteCommentHandler,
+    };
+    let modalComponent = modal(modalData);
+
     return (
       <div>
-        <>
-          <Modal show={this.state.modalFlag} onHide={this.handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Delete Comment</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              Are you sure you want to delete this comment?
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.handleClose}>
-                Close
-              </Button>
-              <Button variant="danger" onClick={this.deleteCommentHandler}>
-                Delete
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </>
+        {modalComponent}
         <h2 style={{ textAlign: "center" }}>Comments</h2>
         <hr />
         {commentCount > 0 ? (
           <React.Fragment>
             <div className={classes.Comments}>{comments}</div>
             <br />
-            <div className={classes.Pagination}>
-              <Pagination
-                activePage={this.state.activePage}
-                itemsCountPerPage={this.state.itemsCountPerPage}
-                totalItemsCount={this.state.totalItemsCount}
-                pageRangeDisplayed={2}
-                onChange={(pageNumber) => this.getUserData(pageNumber)}
-                itemClass="page-item"
-                linkClass="page-link"
-                firstPageText="First"
-                lastPageText="Last"
-              />
-            </div>
+            <div className={classes.Pagination}>{paginationComponent}</div>
           </React.Fragment>
         ) : (
           <h2 className={classes.Empty}>No comments to display</h2>

@@ -47,7 +47,6 @@ class Login extends React.Component {
 
     const data = {
       ...this.state,
-      go: 1,
     };
 
     axios
@@ -207,12 +206,15 @@ class Login extends React.Component {
               Submit
             </Button>
             <hr />
-            <GoogleLogin
-              clientId={googleId}
-              buttonText="Login"
-              onSuccess={this.responseGoogle}
-              onFailure={this.failedResponseGoogle}
-            />
+            <div className={classes.Google}>
+              <GoogleLogin
+                clientId={googleId}
+                buttonText="Login with Google"
+                onSuccess={this.responseGoogle}
+                onFailure={this.failedResponseGoogle}
+                cookiePolicy={"single_host_origin"}
+              />
+            </div>
             <hr />
             <div className={classes.LoginStyle}>
               <a href="/register">Not a member yet? Create an account</a>

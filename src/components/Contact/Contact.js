@@ -1,11 +1,10 @@
 import React from "react";
-import { Container, Button, Form } from "react-bootstrap";
 import classes from "./Contact.module.css";
 import axios from "axios";
+import contactForm from "./ContactForm/ContactForm";
 
-// this class is used to create contact us form and 
+// this class is used to create contact us form and
 // communicate with the backend
-
 
 class Contact extends React.Component {
   constructor(props) {
@@ -69,6 +68,12 @@ class Contact extends React.Component {
   };
 
   render() {
+    const data = {
+      containerClass: classes.Contact,
+      onChange: this.changeHandler,
+      onClick: this.submitHandler,
+    };
+    const contactFormComponent = contactForm(data);
     return (
       <div>
         {/* if the form is submitted  */}
@@ -79,50 +84,7 @@ class Contact extends React.Component {
             <div className={classes.success}>{this.state.feedbackMsg}</div>
           )
         ) : null}
-        <Container className={classes.Contact}>
-          <h3>Contact Us</h3>
-          <hr />
-          <Form>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                name="email"
-                onChange={this.changeHandler}
-              />
-              <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
-              </Form.Text>
-            </Form.Group>
-
-            <Form.Group controlId="formBasicFullName">
-              <Form.Label>Full Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Full Name"
-                name="name"
-                onChange={this.changeHandler}
-              />
-            </Form.Group>
-            <Form.Group controlId="exampleForm.ControlTextarea1">
-              <Form.Label>Message</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows="3"
-                name="message"
-                onChange={this.changeHandler}
-              />
-            </Form.Group>
-            <Button
-              variant="primary"
-              type="submit"
-              onClick={this.submitHandler}
-            >
-              Submit
-            </Button>
-          </Form>
-        </Container>
+        {contactFormComponent}
       </div>
     );
   }

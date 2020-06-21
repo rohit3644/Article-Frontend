@@ -2,9 +2,9 @@ import React from "react";
 import { withRouter, Redirect } from "react-router-dom";
 import Listing from "./Listing/Listing";
 import classes from "./AdminDashboard.module.css";
-import { Modal, Button } from "react-bootstrap";
 import axios from "axios";
-import Pagination from "react-js-pagination";
+import pagination from "../../Pagination/Pagination";
+import modal from "../../Modal/Modal";
 
 // this class is used to display all the articles on the admin
 // screen and also implements the features to approve, delete and
@@ -121,27 +121,26 @@ class AdminDashboard extends React.PureComponent {
         />
       );
     });
+
+    const data = {
+      activePage: this.state.activePage,
+      itemsCountPerPage: this.state.itemsCountPerPage,
+      totalItemsCount: this.state.totalItemsCount,
+      onChange: (pageNumber) => this.getUserData(pageNumber),
+    };
+    let paginationComponent = pagination(data);
+
+    const modalData = {
+      modalFlag: this.state.modalFlag,
+      handleClose: this.handleClose,
+      delete: this.deleteArticleHandler,
+    };
+    let modalComponent = modal(modalData);
+
     return (
       <div>
         {/* modal component  */}
-        <>
-          <Modal show={this.state.modalFlag} onHide={this.handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Delete article</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              Are you sure you want to delete this article?
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.handleClose}>
-                Close
-              </Button>
-              <Button variant="danger" onClick={this.deleteArticleHandler}>
-                Delete
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </>
+        {modalComponent}
         <h2 style={{ textAlign: "center" }}>Articles</h2>
         <hr />
         {articles.length > 0 ? (
@@ -150,17 +149,7 @@ class AdminDashboard extends React.PureComponent {
             <br />
             <div className={classes.Pagination}>
               {/* pagination  */}
-              <Pagination
-                activePage={this.state.activePage}
-                itemsCountPerPage={this.state.itemsCountPerPage}
-                totalItemsCount={this.state.totalItemsCount}
-                pageRangeDisplayed={2}
-                onChange={(pageNumber) => this.getUserData(pageNumber)}
-                itemClass="page-item"
-                linkClass="page-link"
-                firstPageText="First"
-                lastPageText="Last"
-              />
+              {paginationComponent}
             </div>
           </React.Fragment>
         ) : (
