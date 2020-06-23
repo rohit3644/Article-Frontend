@@ -5,8 +5,9 @@ import App from "./containers/App";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
 import "font-awesome/css/font-awesome.min.css";
+import axios from 'axios';
 
-
+axios.defaults.baseURL = '/api';
 ReactDOM.render(
   <Router>
     <App />

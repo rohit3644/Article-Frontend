@@ -2,7 +2,7 @@
   "name": "article-frontend",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://rohit.blog.com/api",
+  "proxy": "http://rohit.blog.com:5000",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",

@@ -301,6 +301,7 @@ const WriteArticle = (props) => {
     axios
       .post(url, form_data, headers)
       .then((response) => {
+        console.log(response);
         if (response.data.code === 200) {
           window.scrollTo(0, inputEl);
           SubmitSetValue({

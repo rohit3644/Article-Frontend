@@ -39,6 +39,7 @@ class ReadMore extends React.Component {
       article: this.props.article,
     };
     axios.post("/read-more", data).then((response) => {
+      console.log(response.data);
       if (response.data === -1) {
         this.setState({ isrender: true, article: {} });
       } else if (response.data.code === 500) {
@@ -113,6 +114,7 @@ class ReadMore extends React.Component {
     axios
       .post("/add-comment", data)
       .then((response) => {
+        console.log(response.data);
         if (response.data.code === 200) {
           this.setState({
             commentsArray: [
@@ -313,7 +315,9 @@ class ReadMore extends React.Component {
         {Object.keys(this.state.article).length > 0 ? (
           <Container className={classes.ReadMore}>
             <img
-              src={this.state.article.image_name}
+              src={"http://ec2-13-233-208-70.ap-south-1.compute.amazonaws.com/upload/images/".concat(
+                this.state.article.image_name
+              )}
               alt="pic"
               width="250"
               height="250"
