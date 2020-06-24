@@ -315,9 +315,7 @@ class ReadMore extends React.Component {
         {Object.keys(this.state.article).length > 0 ? (
           <Container className={classes.ReadMore}>
             <img
-              src={"http://ec2-13-233-208-70.ap-south-1.compute.amazonaws.com/upload/images/".concat(
-                this.state.article.image_name
-              )}
+              src={this.state.article.image_name}
               alt="pic"
               width="250"
               height="250"
