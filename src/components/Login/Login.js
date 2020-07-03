@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Button, Form, Alert } from "react-bootstrap";
 import classes from "./Login.module.css";
 import axios from "axios";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter, Redirect, Link } from "react-router-dom";
 import GoogleLogin from "react-google-login";
 import { googleId } from "../../env";
 
@@ -74,7 +74,6 @@ class Login extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         // scroll to the message
         window.scrollTo(0, this.errorRef);
         this.setState({
@@ -86,14 +85,12 @@ class Login extends React.Component {
   };
 
   responseGoogle = (response) => {
-    console.log(response.tokenObj.access_token);
     let data = {
       token: response.tokenObj.access_token,
     };
     axios
       .post("/googleAuth", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           localStorage.setItem("api_token", response.data.info.api_key);
           localStorage.setItem("username", response.data.info.user.name);
@@ -108,7 +105,6 @@ class Login extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         window.scrollTo(0, this.errorRef);
         this.setState({
           error: true,
@@ -119,7 +115,12 @@ class Login extends React.Component {
   };
 
   failedResponseGoogle = (response) => {
-    console.log(response);
+    window.scrollTo(0, this.errorRef);
+    this.setState({
+      error: true,
+      errorMsg: "Google login failed",
+      alertDismiss: true,
+    });
   };
 
   // on blur validations
@@ -217,7 +218,7 @@ class Login extends React.Component {
             </div>
             <hr />
             <div className={classes.LoginStyle}>
-              <a href="/register">Not a member yet? Create an account</a>
+              <Link to="/register">Not a member yet? Create an account</Link>
             </div>
           </Form>
         </Container>

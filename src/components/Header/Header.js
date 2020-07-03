@@ -3,11 +3,12 @@ import headerComponent from "./HeaderComponent/HeaderComponent";
 import { withRouter } from "react-router-dom";
 import Logo from "../../assets/logo192.png";
 import classes from "./Header.module.css";
-
+import logout from "../LogOut/LogOut";
 // this class displays the conditionals options in the header
 class Header extends React.Component {
   // logout
   logOutHandler = () => {
+    logout();
     localStorage.clear();
     this.props.history.push("/login");
   };
@@ -42,7 +43,7 @@ class Header extends React.Component {
 
     let header = headerComponent(data);
 
-  return <div>{header}</div>;
+    return <div>{header}</div>;
   }
 }
 

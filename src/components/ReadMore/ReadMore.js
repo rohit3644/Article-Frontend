@@ -6,6 +6,7 @@ import Comments from "./Comments/Comments";
 import parse from "html-react-parser";
 import otpSend from "../WriteArticle/Modal/OTPSendModal";
 import otpVerify from "../WriteArticle/Modal/OTPVerifyModal";
+import { withRouter, Link } from "react-router-dom";
 
 // this class is used for displaying the details of the articles,
 // and comments with add comment functionality
@@ -39,13 +40,11 @@ class ReadMore extends React.Component {
       article: this.props.article,
     };
     axios.post("/read-more", data).then((response) => {
-      console.log(response.data);
       if (response.data === -1) {
         this.setState({ isrender: true, article: {} });
       } else if (response.data.code === 500) {
         window.alert(response.data.message);
       } else {
-        console.log(response.data);
         let category = [];
         response.data.info.category.map((ele) => {
           return category.push(ele.category);
@@ -114,7 +113,6 @@ class ReadMore extends React.Component {
     axios
       .post("/add-comment", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           this.setState({
             commentsArray: [
@@ -138,7 +136,7 @@ class ReadMore extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
@@ -198,7 +196,6 @@ class ReadMore extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         this.handleClose();
         this.setState({
           commentMsg: error.response.data.message,
@@ -244,7 +241,6 @@ class ReadMore extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         this.handleClose();
         this.setState({
           commentMsg: error.response.data.message,
@@ -324,7 +320,7 @@ class ReadMore extends React.Component {
             <h3>{this.state.article.title}</h3>
             <hr />
             <strong>
-              Category: <a href="/article-list">{this.state.category}</a>
+              Category: <Link to="/article-list">{this.state.category}</Link>
             </strong>
             <hr />
             {parse(parse(this.state.article.content))}
@@ -407,4 +403,4 @@ class ReadMore extends React.Component {
   }
 }
 
-export default ReadMore;
+export default withRouter(ReadMore);

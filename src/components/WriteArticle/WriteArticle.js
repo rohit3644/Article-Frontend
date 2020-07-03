@@ -15,7 +15,7 @@ import CKEditor from "react-ckeditor-component";
 import parse from "html-react-parser";
 import modal from "./Modal/OTPSendModal";
 import otpVerifyModal from "./Modal/OTPVerifyModal";
-
+import logout from "../LogOut/LogOut";
 // this class is used for adding article and also updating the article
 
 const WriteArticle = (props) => {
@@ -34,8 +34,9 @@ const WriteArticle = (props) => {
         })
         .then((response) => {
           if (response.data.code === 401) {
+            logout();
             localStorage.clear();
-            props.history.push("/login");
+            this.props.history.push("/login");
           } else if (response.data.code === 500) {
             window.alert(response.data.message);
           } else {
@@ -301,7 +302,6 @@ const WriteArticle = (props) => {
     axios
       .post(url, form_data, headers)
       .then((response) => {
-        console.log(response);
         if (response.data.code === 200) {
           window.scrollTo(0, inputEl);
           SubmitSetValue({
@@ -321,7 +321,6 @@ const WriteArticle = (props) => {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         window.scrollTo(0, inputEl);
         SubmitSetValue({
           isArticleSubmitted: true,
@@ -382,7 +381,6 @@ const WriteArticle = (props) => {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         handleClose();
         window.scrollTo(0, inputEl);
         SubmitSetValue({
@@ -433,7 +431,6 @@ const WriteArticle = (props) => {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         handleClose();
         window.scrollTo(0, inputEl);
         SubmitSetValue({

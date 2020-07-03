@@ -3,9 +3,9 @@ import { withRouter, Redirect } from "react-router-dom";
 import Article from "../../Articles/Article/Article";
 import classes from "./UserDashboard.module.css";
 import axios from "axios";
-import pagination from '../../Pagination/Pagination';
-import modal from '../../Modal/Modal';
-
+import pagination from "../../Pagination/Pagination";
+import modal from "../../Modal/Modal";
+import logout from "../../LogOut/LogOut";
 // this class is used to display all the user articles
 // and also provides the functionality to edit, delete and read the article
 
@@ -52,6 +52,7 @@ class UserDashboard extends React.Component {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
@@ -67,7 +68,7 @@ class UserDashboard extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
@@ -96,6 +97,7 @@ class UserDashboard extends React.Component {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
@@ -108,7 +110,7 @@ class UserDashboard extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
@@ -182,9 +184,7 @@ class UserDashboard extends React.Component {
           <React.Fragment>
             <div className={classes.Articles}>{userArticles}</div>
             <br />
-            <div className={classes.Pagination}>
-              {paginationComponent}
-            </div>
+            <div className={classes.Pagination}>{paginationComponent}</div>
           </React.Fragment>
         ) : (
           <h2 className={classes.Empty}>No articles to display</h2>

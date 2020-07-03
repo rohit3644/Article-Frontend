@@ -30,13 +30,11 @@ class FormComponent extends React.Component {
 
   submitHandler = (event) => {
     event.preventDefault();
-    console.log("Payment done");
     try {
       // create stripe token
       this.props.stripe
         .createToken({ name: this.state.name })
         .then((response) => {
-          console.log(response.token);
           let data = {
             tokenId: response.token.id,
             postalCode: response.token.card.address_zip,
@@ -45,7 +43,6 @@ class FormComponent extends React.Component {
           axios
             .post("/payment", data)
             .then((response) => {
-              console.log(response.data);
               if (response.data.code === 200) {
                 window.scrollTo(0, this.myRef);
                 this.setState({
@@ -64,7 +61,6 @@ class FormComponent extends React.Component {
             })
             .catch((error) => {
               window.scrollTo(0, this.myRef);
-              console.log(error.response);
               this.setState({
                 responseMsg: error.response.data.message,
                 error: true,
@@ -74,7 +70,6 @@ class FormComponent extends React.Component {
         })
         .catch((error) => {
           window.scrollTo(0, this.myRef);
-          console.log(error.response);
           this.setState({
             responseMsg: "Invalid request",
             error: true,

@@ -1,7 +1,7 @@
 import React from "react";
 import classes from "./Article.module.css";
-import { Card, Button, Col } from "react-bootstrap";
-import { withRouter } from "react-router-dom";
+import { Card, Col } from "react-bootstrap";
+import { withRouter, Link } from "react-router-dom";
 
 // this class is used to create a card with article details,
 // like article name, author name, number of comments
@@ -45,9 +45,9 @@ class Article extends React.Component {
           />
           <Card.Body className={classes.Article}>
             <Card.Title>
-              <a href={readMoreLink} onClick={this.props.readMore}>
+              <Link to={readMoreLink} onClick={this.props.readMore}>
                 {this.props.title}
-              </a>
+              </Link>
             </Card.Title>
             <div className={classes.Style}>
               <Col>
@@ -68,13 +68,13 @@ class Article extends React.Component {
               </Card.Text>
             </div>
             <hr />
-            <Button
+            <Link
               variant="primary"
-              href={readMoreLink}
+              to={readMoreLink}
               onClick={this.props.readMore}
             >
               Read More
-            </Button>
+            </Link>
           </Card.Body>
         </Card>
       </div>

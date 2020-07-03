@@ -2,8 +2,8 @@ import React from "react";
 import classes from "./Listing.module.css";
 import { Card, Button, Form } from "react-bootstrap";
 import axios from "axios";
-import { withRouter } from "react-router-dom";
-
+import { withRouter, Link } from "react-router-dom";
+import logout from "../../../LogOut/LogOut";
 // this class is used for all the functionalities like approve, delete, edit
 // comments and articles on the admin screen
 class Listing extends React.Component {
@@ -35,6 +35,7 @@ class Listing extends React.Component {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
@@ -44,7 +45,7 @@ class Listing extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
@@ -84,6 +85,7 @@ class Listing extends React.Component {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
@@ -93,7 +95,7 @@ class Listing extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
@@ -112,6 +114,7 @@ class Listing extends React.Component {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
@@ -121,7 +124,7 @@ class Listing extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
   render() {
@@ -136,7 +139,7 @@ class Listing extends React.Component {
       <Card className={classes.Style}>
         <Card.Body>
           <Card.Title>
-            <a href={readMoreLink}>{this.props.name}</a>
+            <Link to={readMoreLink}>{this.props.name}</Link>
           </Card.Title>
           <Card.Text>{cardText}</Card.Text>
           {this.state.editComment ? (

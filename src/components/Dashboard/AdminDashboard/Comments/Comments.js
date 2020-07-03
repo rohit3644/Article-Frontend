@@ -5,7 +5,7 @@ import classes from "./Comments.module.css";
 import axios from "axios";
 import pagination from "../../../Pagination/Pagination";
 import modal from "../../../Modal/Modal";
-
+import logout from '../../../LogOut/LogOut';
 // this class is used to display all the article comments
 // and approve, delete and edit the comments
 class Comments extends React.PureComponent {
@@ -74,6 +74,7 @@ class Comments extends React.PureComponent {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
@@ -86,7 +87,7 @@ class Comments extends React.PureComponent {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
@@ -124,7 +125,6 @@ class Comments extends React.PureComponent {
         );
       });
     });
-    console.log(commentCount);
 
     const data = {
       activePage: this.state.activePage,

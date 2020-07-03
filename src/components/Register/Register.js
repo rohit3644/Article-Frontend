@@ -3,9 +3,9 @@ import { Container, Button, Form } from "react-bootstrap";
 import classes from "./Register.module.css";
 import classeserror from "./RegisterError.module.css";
 import axios from "axios";
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 
-// this class is used for user registration 
+// this class is used for user registration
 
 class Register extends React.Component {
   constructor(props) {
@@ -74,8 +74,6 @@ class Register extends React.Component {
     return strength;
   };
 
-  
-
   phoneNumberValidation = (inputtxt) => {
     var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     if (inputtxt.match(phoneno)) {
@@ -132,7 +130,6 @@ class Register extends React.Component {
     axios
       .post("/otp-send", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           this.setState({
             showVerify: true,
@@ -142,7 +139,6 @@ class Register extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         this.setState({ backendError: error.response.data.message });
       });
   };
@@ -163,7 +159,6 @@ class Register extends React.Component {
     axios
       .post("/otp-verify", data)
       .then((response) => {
-        console.log(response.data);
         if (response.data.code === 200) {
           this.setState({
             otpVerified: true,
@@ -177,7 +172,6 @@ class Register extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         this.setState({ backendError: error.response.data.message });
       });
   };
@@ -209,7 +203,6 @@ class Register extends React.Component {
         }
       })
       .catch((error) => {
-        console.log(error.response);
         this.setState({ backendError: error.response.data.message });
       });
   };
@@ -415,7 +408,7 @@ class Register extends React.Component {
                 </Button>
                 <hr />
                 <div className={classes.RegisterStyle}>
-                  <a href="/login">Already have an account? Sign In</a>
+                  <Link to="/login">Already have an account? Sign In</Link>
                 </div>
               </Form>
             </Container>
@@ -466,7 +459,7 @@ class Register extends React.Component {
               />
             </svg>
 
-            <a href="/login">Proceed to login</a>
+            <Link to="/login">Proceed to login</Link>
           </Container>
         )}
       </div>

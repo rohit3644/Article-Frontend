@@ -4,11 +4,12 @@ import {
   Nav,
   Form,
   FormControl,
-  Button,
   Row,
   Col,
   Dropdown,
 } from "react-bootstrap";
+import { Link } from "react-router-dom";
+
 const headerComponent = (data) => {
   const headerComponent = (
     <Row className={data.HeaderStyle}>
@@ -36,45 +37,45 @@ const headerComponent = (data) => {
           localStorage.getItem("api_token").slice(0, 5) === "14219" ? (
             <Col>
               <Nav className="mr-auto" style={{ width: "max-content" }}>
-                <Button className={data.Header} href="/user-dashboard">
+                <Link className={data.Header} to="/user-dashboard">
                   My Articles
-                </Button>
-                <Button className={data.Header} href="/">
+                </Link>
+                <Link className={data.Header} to="/">
                   Home
-                </Button>
-                <Button
+                </Link>
+                <Link
                   className={data.Header}
-                  href="/write-article"
+                  to="/write-article"
                   onClick={data.editHandler}
                 >
                   Write Article
-                </Button>
+                </Link>
               </Nav>
             </Col>
           ) : (
             <Col>
               <Nav className="mr-auto" style={{ width: "max-content" }}>
-                <Button className={data.Header} href="/admin-dashboard">
+                <Link className={data.Header} to="/admin-dashboard">
                   Articles
-                </Button>
-                <Button className={data.Header} href="/comments">
+                </Link>
+                <Link className={data.Header} to="/comments">
                   Comments
-                </Button>
+                </Link>
               </Nav>
             </Col>
           )
         ) : (
           <Col>
             <Nav className="mr-auto" style={{ width: "max-content" }}>
-              <Button className={data.Header} href="/">
+              <Link className={data.Header} to="/">
                 Home
-              </Button>
-              <Button className={data.Header} href="/write-article">
+              </Link>
+              <Link className={data.Header} to="/write-article">
                 Write Article
-              </Button>
-              <Button className={data.Header} href="/payment">
+              </Link>
+              <Link className={data.Header} to="/payment">
                 Membership
-              </Button>
+              </Link>
             </Nav>
           </Col>
         )}
@@ -93,12 +94,12 @@ const headerComponent = (data) => {
         {localStorage.getItem("api_token") === null ? (
           <Col>
             <Nav className="mr-auto" style={{ width: "max-content" }}>
-              <Button className={data.Header} href="/login">
+              <Link className={data.Header} to="/login">
                 Login
-              </Button>
-              <Button className={data.Header} href="/register">
+              </Link>
+              <Link className={data.Header} to="/register">
                 Register
-              </Button>
+              </Link>
             </Nav>
           </Col>
         ) : (

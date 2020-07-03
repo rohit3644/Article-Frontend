@@ -1,5 +1,6 @@
 import React from "react";
 import { Accordion, Card, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import classes from "./Categories.module.css";
 
 // this component display the categories and respective articles
@@ -22,7 +23,7 @@ const Categories = (props) => {
                 let link = "/" + article.split(" ").join("-").toLowerCase();
                 return (
                   <div key={id}>
-                    <a href={link}>{article}</a>
+                    <Link to={link}>{article}</Link>
                   </div>
                 );
               })}

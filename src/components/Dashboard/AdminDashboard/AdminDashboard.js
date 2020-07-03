@@ -5,7 +5,7 @@ import classes from "./AdminDashboard.module.css";
 import axios from "axios";
 import pagination from "../../Pagination/Pagination";
 import modal from "../../Modal/Modal";
-
+import logout from '../../LogOut/LogOut';
 // this class is used to display all the articles on the admin
 // screen and also implements the features to approve, delete and
 // edit articles
@@ -32,7 +32,6 @@ class AdminDashboard extends React.PureComponent {
   // pagination from the backend
   getUserData = (pageNumber = 1) => {
     axios.get(`/article?page=${pageNumber}`).then((response) => {
-      console.log(response.data);
       if (response.data.code === 200) {
         this.setState({
           articles: [...response.data.info.articles.data],
@@ -73,10 +72,11 @@ class AdminDashboard extends React.PureComponent {
       })
       .then((response) => {
         if (response.data.code === 401) {
+          logout();
           localStorage.clear();
           this.props.history.push("/login");
         } else if (response.data.code === 500) {
-          window.alert("Internal Server Error");
+          window.alert(response.data.message);
         } else {
           this.setState({
             modalFlag: false,
@@ -85,7 +85,7 @@ class AdminDashboard extends React.PureComponent {
         }
       })
       .catch((error) => {
-        console.log(error.response);
+        window.alert(error.response.data.message);
       });
   };
 
